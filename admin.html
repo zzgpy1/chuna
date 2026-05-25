@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 · 发布文章</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-panel { max-width: 900px; margin: 2rem auto; background: white; border-radius: 28px; padding: 2rem; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1); }
+        .login-box { text-align: center; padding: 2rem; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 20px; border: 1px solid #e2e8f0; border-radius: 20px; font-family: inherit; }
+        button { background: #1e293b; color: white; border: none; padding: 12px 24px; border-radius: 40px; cursor: pointer; font-weight: 600; }
+        .markdown-help { font-size: 0.85rem; color: #475569; margin-top: -12px; margin-bottom: 20px; }
+        .post-status { display: flex; gap: 20px; align-items: center; }
+    </style>
+</head>
+<body>
+    <nav class="navbar"><div class="container nav-container"><a href="index.html" class="logo">📖 静思日志</a><div class="nav-links"><a href="index.html">首页</a><a href="admin.html">管理后台</a></div></div></nav>
+    <main class="main-content"><div class="container" id="adminApp"></div></main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const container = document.getElementById('adminApp');
+
+        function renderLogin() {
+            container.innerHTML = `
+                <div class="admin-panel login-box">
+                    <h2>🔐 管理员登录</h2>
+                    <p>使用您创建的 Firebase Auth 邮箱账号</p>
+                    <input type="email" id="loginEmail" placeholder="admin@example.com">
+                    <input type="password" id="loginPassword" placeholder="密码">
+                    <button id="loginBtn">登录</button>
+                </div>
+            `;
+            document.getElementById('loginBtn').onclick = async () => {
+                const email = document.getElementById('loginEmail').value;
+                const pwd = document.getElementById('loginPassword').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, pwd);
+                    alert("登录成功");
+                } catch(e) { alert("登录失败："+e.message); }
+            };
+        }
+
+        function renderEditor() {
+            container.innerHTML = `
+                <div class="admin-panel">
+                    <div style="display:flex; justify-content:space-between"><h2>✍️ 发布新文章</h2><button id="logoutBtn" class="music-btn" style="background:#ef4444">退出</button></div>
+                    <label>标题</label><input type="text" id="postTitle" placeholder="文章标题">
+                    <label>内容 (Markdown 自动排版)</label>
+                    <textarea id="postContent" rows="12" placeholder="使用 Markdown 语法写正文..."></textarea>
+                    <div class="markdown-help">💡 支持 # 标题、**粗体**、[链接](url) 等，将自动渲染</div>
+                    <div class="post-status">
+                        <label><input type="checkbox" id="publishedCheckbox" checked> 立即发布（勾选后公开可见）</label>
+                    </div>
+                    <button id="publishBtn">📤 发布 / 更新</button>
+                    <hr style="margin: 2rem 0">
+                    <h3>📌 草稿箱或已发布文章管理 (编辑现有文章)</h3>
+                    <div id="existingPostsList">加载中...</div>
+                </div>
+            `;
+            document.getElementById('logoutBtn').onclick = () => signOut(auth);
+            loadExistingPosts();
+
+            document.getElementById('publishBtn').onclick = async () => {
+                const title = document.getElementById('postTitle').value.trim();
+                const content = document.getElementById('postContent').value.trim();
+                const published = document.getElementById('publishedCheckbox').checked;
+                if (!title) return alert("请输入标题");
+                try {
+                    await addDoc(collection(db, "posts"), {
+                        title, content, published,
+                        createdAt: serverTimestamp(),
+                        count: 0
+                    });
+                    alert("发布成功！");
+                    document.getElementById('postTitle').value = '';
+                    document.getElementById('postContent').value = '';
+                    loadExistingPosts();
+                } catch(e) { alert("发布失败: "+e.message); }
+            };
+        }
+
+        async function loadExistingPosts() {
+            const listDiv = document.getElementById('existingPostsList');
+            listDiv.innerHTML = '加载中...';
+            const snapshot = await getDocs(collection(db, "posts"));
+            if (snapshot.empty) { listDiv.innerHTML = '暂无任何文章'; return; }
+            let html = '<ul style="list-style:none; padding:0;">';
+            snapshot.forEach(docSnap => {
+                const p = docSnap.data();
+                html += `<li style="border-bottom:1px solid #e2e8f0; padding:12px 0; display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+                            <strong>${escapeHtml(p.title)}</strong> 
+                            <span style="color:#475569">${p.published ? '✅已发布' : '📝草稿'}</span>
+                            <button class="edit-btn" data-id="${docSnap.id}" style="background:#3b82f6; padding:4px 12px;">编辑</button>
+                            <button class="del-btn" data-id="${docSnap.id}" style="background:#ef4444;">删除</button>
+                         </li>`;
+            });
+            html += '</ul>';
+            listDiv.innerHTML = html;
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.dataset.id;
+                    const ref = doc(db, "posts", id);
+                    const snap = await getDoc(ref);
+                    if(snap.exists()) {
+                        const data = snap.data();
+                        document.getElementById('postTitle').value = data.title;
+                        document.getElementById('postContent').value = data.content;
+                        document.getElementById('publishedCheckbox').checked = data.published;
+                        alert("已加载文章内容，修改后点击【发布/更新】将创建新文章。如需更新同名文章，建议删除旧版。");
+                    }
+                };
+            });
+            document.querySelectorAll('.del-btn').forEach(btn => {
+                btn.onclick = async () => { if(confirm("永久删除？")) await deleteDoc(doc(db, "posts", btn.dataset.id)); loadExistingPosts(); };
+            });
+        }
+
+        function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;}); }
+
+        onAuthStateChanged(auth, user => { user ? renderEditor() : renderLogin(); });
+        // helper
+        async function getDocs(ref) { const qSnap = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(m => m.getDocs(ref)); return qSnap; }
+        async function deleteDoc(ref) { const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"); return deleteDoc(ref); }
+        window.getDocs = getDocs; window.deleteDoc = deleteDoc; // 临时技巧
+    </script>
+</body>
+</html>
