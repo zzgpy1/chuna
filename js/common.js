@@ -1,5 +1,5 @@
 // Supabase 配置（务必替换为你的项目值）
-const SUPABASE_URL = 'https://nosdotnkovyqiiulitck.supabase.co/rest/v1/';
+const SUPABASE_URL = 'https://nosdotnkovyqiiulitck.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vc2RvdG5rb3Z5cWlpdWxpdGNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODQ3MzAsImV4cCI6MjA5NTI2MDczMH0.UCMqR0-XjeGbq7EoTBRxG2FW1ujc_L0xpZmrs-cgxgg'; 
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
