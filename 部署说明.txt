@@ -1,0 +1,18 @@
+## 部署说明
+
+1. **创建 Supabase 项目**：按照 README 中的 SQL 创建数据表和 RLS 策略
+2. **创建管理员账号**：在 Supabase Auth 中创建用户，邮箱需与 RLS 策略中的邮箱一致
+3. **配置环境变量**：复制 `.env.example` 为 `.env` 并填入你的 Supabase URL 和 anon key
+4. **本地运行**：`npm install && npm run dev`
+5. **部署到 GitHub Pages**：
+   - 修改 `vite.config.js` 中的 `base` 为你的仓库名（如 `/blog/`）
+   - 运行 `npm run build`
+   - 将 `dist` 文件夹推送到 GitHub 仓库的 `gh-pages` 分支
+
+## 访问地址
+
+- 前台：`/` - 展示所有已发布文章
+- 后台：`/admin` - 需要管理员登录
+- 文章详情：`/post/:slug`
+
+博客现已具备完整的发布、阅读计数、背景音乐和后台管理功能，界面采用了现代化毛玻璃和卡片设计，支持深色风格和流畅动画。
