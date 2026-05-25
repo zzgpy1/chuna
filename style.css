@@ -1,0 +1,22 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.5; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.navbar { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top:0; z-index: 10; backdrop-filter: blur(8px); background: rgba(255,255,255,0.85); }
+.nav-container { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 24px; }
+.logo { font-size: 1.5rem; font-weight: 700; text-decoration: none; background: linear-gradient(135deg, #1e293b, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nav-link { margin-left: 2rem; text-decoration: none; color: #334155; font-weight: 500; transition: 0.2s; }
+.nav-link:hover { color: #3b82f6; }
+.hero { text-align: center; margin: 2rem 0 2rem; }
+.hero h1 { font-size: 2.5rem; background: linear-gradient(to right, #0f172a, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.posts-grid { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); margin: 2rem 0; }
+.post-card { background: white; border-radius: 28px; transition: 0.25s ease; box-shadow: 0 8px 20px rgba(0,0,0,0.02); border: 1px solid #eef2f6; overflow: hidden; }
+.post-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+.post-card-inner { padding: 1.6rem; }
+.post-meta { display: flex; gap: 1rem; font-size: 0.85rem; color: #475569; margin-bottom: 0.8rem; }
+.post-title { font-size: 1.5rem; margin-bottom: 0.75rem; font-weight: 600; }
+.post-summary { color: #334155; margin-bottom: 1.2rem; line-height: 1.5; }
+.read-more { font-weight: 600; text-decoration: none; color: #3b82f6; }
+.footer { text-align: center; padding: 2rem 0; margin-top: 3rem; border-top: 1px solid #e2e8f0; color: #475569; }
+.music-player { text-align: right; margin-bottom: 1rem; }
+.music-btn { background: white; border: 1px solid #cbd5e1; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+.loading-state, .empty-msg { text-align: center; padding: 3rem; background: white; border-radius: 32px; color: #475569; }
