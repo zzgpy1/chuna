@@ -1,5 +1,5 @@
 // Supabase 配置（务必替换为你的项目值）
-const SUPABASE_URL = 'https://xxxxxxxxxxxx.supabase.co';
+const SUPABASE_URL = 'https://boke.19860519.xyz';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIs...'; 
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
