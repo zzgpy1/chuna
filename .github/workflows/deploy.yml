@@ -1,8 +1,8 @@
-name: Encrypt and Deploy to GitHub Pages
+name: Encrypt and Deploy
 
 on:
   push:
-    branches: ["main"]
+    branches: [ main, master ]
   workflow_dispatch:
 
 permissions:
@@ -10,65 +10,40 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: List files for debug
-        run: ls -la
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
       - name: Install Staticrypt
         run: npm install -g staticrypt
 
-      - name: Verify main.html exists
-        run: |
-          if [ ! -f "main.html" ]; then
-            echo "ERROR: main.html not found in root directory!"
-            exit 1
-          fi
-          echo "main.html found."
-
       - name: Encrypt main.html
-        env:
-          PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
         run: |
-          if [ -z "$PASSWORD" ]; then
-            echo "ERROR: LOGIN_PASSWORD secret is not set!"
-            exit 1
-          fi
           staticrypt main.html \
-            --passphrase "$PASSWORD" \
+            --passphrase "${{ secrets.LOGIN_PASSWORD }}" \
             --template-title "出纳管理系统" \
             --template-instructions "请输入访问密码" \
-            --template-button "验证进入" \
-            --remember 72 \
             --short \
             -o index.html
-          echo "Encryption completed, index.html generated."
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
   deploy:
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
