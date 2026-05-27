@@ -10,6 +10,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -30,8 +34,9 @@ jobs:
           staticrypt main.html \
             --passphrase "${{ secrets.LOGIN_PASSWORD }}" \
             --template-title "出纳管理系统 · 安全访问" \
-            --template-instructions "请输入系统访问密码" \
-            --template-button "进入系统" \
+            --template-instructions "请输入访问密码（由系统管理员提供）" \
+            --template-button "验证进入" \
+            --remember 72 \
             --short \
             -o index.html
 
