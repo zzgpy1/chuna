@@ -18,8 +18,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: List files for debug
+        run: ls -la
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,16 +32,31 @@ jobs:
       - name: Install Staticrypt
         run: npm install -g staticrypt
 
-      - name: Encrypt main.html with GitHub Secret
+      - name: Verify main.html exists
         run: |
+          if [ ! -f "main.html" ]; then
+            echo "ERROR: main.html not found in root directory!"
+            exit 1
+          fi
+          echo "main.html found."
+
+      - name: Encrypt main.html
+        env:
+          PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+        run: |
+          if [ -z "$PASSWORD" ]; then
+            echo "ERROR: LOGIN_PASSWORD secret is not set!"
+            exit 1
+          fi
           staticrypt main.html \
-            --passphrase "${{ secrets.LOGIN_PASSWORD }}" \
-            --template-title "出纳管理系统 · 安全访问" \
-            --template-instructions "请输入访问密码（由系统管理员提供）" \
+            --passphrase "$PASSWORD" \
+            --template-title "出纳管理系统" \
+            --template-instructions "请输入访问密码" \
             --template-button "验证进入" \
             --remember 72 \
             --short \
             -o index.html
+          echo "Encryption completed, index.html generated."
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
