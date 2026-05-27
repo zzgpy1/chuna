@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>出纳管理系统 · 供应商账务+收支管理</title>
-    <!-- TailwindCSS + Font Awesome + Chart.js + 日期选择器 -->
+    <title>出纳管理系统 · 供应商+收支+预算</title>
+    <!-- TailwindCSS + Font Awesome + Chart.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -22,7 +22,6 @@
 </head>
 <body class="antialiased">
 
-<!-- 主应用容器，Staticrypt 加密后显示，验证成功后展示 -->
 <div id="appRoot" class="min-h-screen">
     <!-- 顶部导航栏 -->
     <nav class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-20 border-b border-gray-200">
@@ -30,11 +29,11 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
                     <div class="bg-indigo-100 p-2 rounded-xl"><i class="fas fa-landmark text-indigo-700 text-xl"></i></div>
-                    <span class="font-bold text-xl text-gray-800">出纳系统 <span class="text-indigo-500 text-sm ml-1">增强版</span></span>
-                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full hidden sm:block">供应商+收支+预算</span>
+                    <span class="font-bold text-xl text-gray-800">出纳系统 <span class="text-indigo-500 text-sm ml-1">专业版</span></span>
+                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full hidden sm:block">供应商 | 多币种 | 预算</span>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <span class="text-sm text-gray-600"><i class="far fa-user-circle mr-1"></i><span id="userDisplay">出纳员</span></span>
+                    <span class="text-sm text-gray-600"><i class="far fa-user-circle mr-1"></i><span id="userDisplay">财务主管</span></span>
                     <button id="logoutBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-lock mr-1"></i>锁定</button>
                 </div>
             </div>
@@ -71,18 +70,18 @@
             <div id="supplierCards" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
         </div>
 
-        <!-- 3. 收支记录（费用类别 + 付款） -->
+        <!-- 3. 收支记录（支出/付款） -->
         <div id="expensesPanel" class="tab-panel hidden">
             <div class="bg-white rounded-2xl shadow-sm p-5 mb-5">
-                <div class="flex flex-wrap justify-between items-center gap-3"><h2 class="font-semibold text-lg"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>新增支出/付款</h2><button id="quickAddExpenseBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus-circle"></i> 登记支出</button></div>
+                <div class="flex flex-wrap justify-between items-center gap-3"><h2 class="font-semibold text-lg"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>登记支出/付款</h2><button id="quickAddExpenseBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus-circle"></i> 新增支出</button></div>
                 <div class="flex flex-wrap gap-4 mt-3"><select id="expenseFilterSupplier" class="border rounded-lg px-3 py-1.5 text-sm"><option value="all">所有供应商</option></select><select id="expenseCategoryFilter" class="border rounded-lg px-3 py-1.5 text-sm"><option value="all">全部类别</option></select><button id="refreshExpensesBtn" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-sync-alt"></i> 刷新</button></div>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm overflow-x-auto"><table class="min-w-full divide-y"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left text-xs">日期</th><th class="px-4 py-3 text-left text-xs">供应商</th><th class="px-4 py-3 text-left text-xs">类别</th><th class="px-4 py-3 text-left text-xs">金额</th><th class="px-4 py-3 text-left text-xs">币种</th><th class="px-4 py-3 text-left text-xs">确认状态</th><th class="px-4 py-3 text-left text-xs">操作</th></tr></thead><tbody id="expensesTbody"></tbody></table></div>
+            <div class="bg-white rounded-2xl shadow-sm overflow-x-auto"><table class="min-w-full divide-y"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left text-xs">日期</th><th class="px-4 py-3 text-left text-xs">供应商</th><th class="px-4 py-3 text-left text-xs">类别</th><th class="px-4 py-3 text-left text-xs">金额</th><th class="px-4 py-3 text-left text-xs">币种</th><th class="px-4 py-3 text-left text-xs">状态</th><th class="px-4 py-3 text-left text-xs">操作</th></thead><tbody id="expensesTbody"></tbody></table></div>
         </div>
 
         <!-- 4. 账户/转账 -->
         <div id="accountsPanel" class="tab-panel hidden">
-            <div class="grid md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-university"></i> 资金账户</h3><div id="accountsList"></div><button id="addAccountBtnMain" class="mt-3 bg-indigo-50 text-indigo-600 text-sm px-3 py-1.5 rounded-lg"><i class="fas fa-plus-circle"></i> 新增账户</button></div><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-exchange-alt"></i> 账户间转账</h3><select id="transferFromAcc" class="w-full border rounded-lg p-2 mb-2"></select><select id="transferToAcc" class="w-full border rounded-lg p-2 mb-2"></select><input type="number" id="transferAmount" placeholder="转账金额" class="w-full border rounded-lg p-2 mb-2"><button id="doTransferBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg">确认转账</button></div></div>
+            <div class="grid md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-university"></i> 资金账户</h3><div id="accountsListContainer"></div><button id="addAccountBtnMain" class="mt-3 bg-indigo-50 text-indigo-600 text-sm px-3 py-1.5 rounded-lg"><i class="fas fa-plus-circle"></i> 新增账户</button></div><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-exchange-alt"></i> 账户间转账</h3><select id="transferFromAcc" class="w-full border rounded-lg p-2 mb-2"></select><select id="transferToAcc" class="w-full border rounded-lg p-2 mb-2"></select><input type="number" id="transferAmount" placeholder="转账金额" class="w-full border rounded-lg p-2 mb-2"><button id="doTransferBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg">确认转账</button></div></div>
         </div>
 
         <!-- 5. 报表统计 -->
@@ -99,49 +98,84 @@
     </div>
 </div>
 
-<!-- 各类弹窗 -->
-<div id="supplierModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-auto"><div class="flex justify-between"><h3 id="modalTitle" class="text-xl font-bold">供应商信息</h3><button id="closeModalBtn" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button></div><form id="supplierForm"><input type="hidden" id="supplierId"><div class="grid grid-cols-2 gap-3 mt-3"><input id="supName" placeholder="名称*" class="border rounded-lg p-2"><input id="supProducts" placeholder="供应产品" class="border rounded-lg p-2"><select id="supPayType" class="border rounded-lg p-2"><option>预付款</option><option>后付款</option></select><input id="supStorage" type="number" placeholder="入库金额" class="border rounded-lg p-2"></div><div class="mt-2"><label class="text-sm font-medium">账户列表</label><div id="supplierAccounts"></div><button type="button" id="addAccountToSupplier" class="text-indigo-600 text-sm mt-1"><i class="fas fa-plus-circle"></i> 添加账户</button></div><div class="flex justify-end gap-2 mt-4"><button type="button" id="cancelModalBtn" class="border px-4 py-1.5 rounded-lg">取消</button><button type="submit" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg">保存</button></div></form></div></div>
+<!-- 供应商弹窗 -->
+<div id="supplierModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-auto"><div class="flex justify-between"><h3 id="modalTitle" class="text-xl font-bold">供应商信息</h3><button id="closeModalBtn" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button></div><form id="supplierForm"><input type="hidden" id="supplierId"><div class="grid grid-cols-2 gap-3 mt-3"><input id="supName" placeholder="名称*" class="border rounded-lg p-2"><input id="supProducts" placeholder="供应产品" class="border rounded-lg p-2"><select id="supPayType" class="border rounded-lg p-2"><option>预付款</option><option>后付款</option></select><input id="supStorage" type="number" placeholder="入库金额" class="border rounded-lg p-2"></div><div class="mt-2"><label class="text-sm font-medium">供应商账户</label><div id="supplierAccounts"></div><button type="button" id="addAccountToSupplier" class="text-indigo-600 text-sm mt-1"><i class="fas fa-plus-circle"></i> 添加账户</button></div><div class="flex justify-end gap-2 mt-4"><button type="button" id="cancelModalBtn" class="border px-4 py-1.5 rounded-lg">取消</button><button type="submit" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg">保存</button></div></form></div></div>
 
+<!-- 支出弹窗 -->
 <div id="expenseModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 class="text-xl font-bold mb-3">登记支出/付款</h3><select id="expSupId" class="w-full border rounded-lg p-2 mb-2"><option>选择供应商</option></select><input type="number" id="expAmount" placeholder="金额" class="w-full border rounded-lg p-2 mb-2"><select id="expCurrency" class="w-full border rounded-lg p-2 mb-2"><option value="CNY">CNY 人民币</option><option value="USD">USD 美元</option><option value="EUR">EUR 欧元</option></select><select id="expCategory" class="w-full border rounded-lg p-2 mb-2"><option value="原材料采购">原材料采购</option><option value="办公费用">办公费用</option><option value="运输物流">运输物流</option><option value="其他">其他</option></select><input type="date" id="expDate" class="w-full border rounded-lg p-2 mb-2"><textarea id="expNote" placeholder="备注" class="border rounded-lg p-2 mb-3"></textarea><div class="flex justify-end gap-2"><button id="closeExpModal" class="border px-3 py-1.5 rounded-lg">取消</button><button id="saveExpenseBtn" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg">保存(待确认)</button></div></div></div>
 
+<!-- 账户弹窗 -->
+<div id="accountModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 class="text-xl font-bold mb-3">新建账户</h3><input id="accName" placeholder="账户名称(例:工商银行)" class="w-full border rounded-lg p-2 mb-2"><select id="accType" class="w-full border rounded-lg p-2 mb-2"><option value="bank">银行账户</option><option value="wechat">微信</option><option value="alipay">支付宝</option><option value="cash">现金</option></select><select id="accCurrency" class="w-full border rounded-lg p-2 mb-2"><option value="CNY">CNY</option><option value="USD">USD</option><option value="EUR">EUR</option></select><input id="accBalance" type="number" placeholder="初始余额" class="w-full border rounded-lg p-2 mb-2"><div class="flex justify-end gap-2"><button id="closeAccModal" class="border px-3 py-1.5 rounded-lg">取消</button><button id="saveAccountBtn" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg">创建账户</button></div></div></div>
+
 <script>
-    // ================= IndexedDB 初始化 =================
+    // ==================== IndexedDB 管理 ====================
     let db = null;
-    const DB_VERSION = 5;
+    const DB_NAME = "CashierPro";
+    const DB_VERSION = 7;
+
     function openDB() {
         return new Promise((resolve) => {
-            const req = indexedDB.open("CashierSystem", DB_VERSION);
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
             req.onupgradeneeded = (e) => {
                 const d = e.target.result;
                 if (!d.objectStoreNames.contains("suppliers")) d.createObjectStore("suppliers", { keyPath: "id", autoIncrement: true });
-                if (!d.objectStoreNames.contains("accounts")) d.createObjectStore("accounts", { keyPath: "id", autoIncrement: true });
+                if (!d.objectStoreNames.contains("supplierAccounts")) d.createObjectStore("supplierAccounts", { keyPath: "id", autoIncrement: true });
                 if (!d.objectStoreNames.contains("expenses")) d.createObjectStore("expenses", { keyPath: "id", autoIncrement: true });
+                if (!d.objectStoreNames.contains("systemAccounts")) d.createObjectStore("systemAccounts", { keyPath: "id", autoIncrement: true });
                 if (!d.objectStoreNames.contains("transfers")) d.createObjectStore("transfers", { keyPath: "id", autoIncrement: true });
                 if (!d.objectStoreNames.contains("budgets")) d.createObjectStore("budgets", { keyPath: "month" });
             };
             req.onsuccess = () => { db = req.result; resolve(db); };
         });
     }
+
     async function getAll(store) { return new Promise((res) => { const tx = db.transaction(store, 'readonly'), req = tx.objectStore(store).getAll(); req.onsuccess = () => res(req.result); }); }
     async function saveItem(store, item) { return new Promise((res) => { const tx = db.transaction(store, 'readwrite'), req = tx.objectStore(store).put(item); req.onsuccess = () => res(req.result); }); }
     async function deleteItem(store, id) { return new Promise((res) => { const tx = db.transaction(store, 'readwrite'), req = tx.objectStore(store).delete(id); req.onsuccess = () => res(); }); }
 
-    let appData = { suppliers: [], accounts: [], expenses: [], transfers: [], budgets: {} };
-    async function loadData() { appData.suppliers = await getAll("suppliers"); appData.accounts = await getAll("accounts"); appData.expenses = await getAll("expenses"); appData.transfers = await getAll("transfers"); const budgetsArr = await getAll("budgets"); budgetsArr.forEach(b => { appData.budgets[b.month] = b.totalBudget; }); }
+    let appData = { suppliers: [], supplierAccounts: [], expenses: [], systemAccounts: [], transfers: [], budgets: {} };
+    async function loadData() {
+        appData.suppliers = await getAll("suppliers");
+        appData.supplierAccounts = await getAll("supplierAccounts");
+        appData.expenses = await getAll("expenses");
+        appData.systemAccounts = await getAll("systemAccounts");
+        appData.transfers = await getAll("transfers");
+        const budgetsArr = await getAll("budgets");
+        budgetsArr.forEach(b => { appData.budgets[b.month] = b.totalBudget; });
+    }
 
     async function initMock() {
         if ((await getAll("suppliers")).length === 0) {
             const s1 = await saveItem("suppliers", { name: "宏达钢材", products: "螺纹钢", paymentType: "后付款", totalStorage: 125000, totalPaid: 0 });
             const s2 = await saveItem("suppliers", { name: "宏远电子", products: "电子元件", paymentType: "预付款", totalStorage: 68000, totalPaid: 0 });
-            await saveItem("accounts", { name: "建设银行对公", type: "bank", balance: 35000, currency: "CNY" });
-            await saveItem("accounts", { name: "微信零钱", type: "wechat", balance: 12000, currency: "CNY" });
-            await saveItem("expenses", { supplierId: s1, amount: 25000, category: "原材料采购", date: new Date().toISOString().slice(0,10), isConfirmed: false, currency: "CNY" });
-            await saveItem("expenses", { supplierId: s2, amount: 18000, category: "设备采购", date: new Date().toISOString().slice(0,10), isConfirmed: true, currency: "CNY" });
+            await saveItem("supplierAccounts", { supplierId: s1, accountName: "对公-建设银行", accountNumber: "6217****1234", bankName: "建设银行", accountType: "public" });
+            await saveItem("systemAccounts", { name: "建设银行基本户", type: "bank", balance: 50000, currency: "CNY" });
+            await saveItem("systemAccounts", { name: "微信商户", type: "wechat", balance: 12800, currency: "CNY" });
+            const today = new Date().toISOString().slice(0,10);
+            await saveItem("expenses", { supplierId: s1, amount: 25000, category: "原材料采购", date: today, isConfirmed: false, currency: "CNY", note: "首笔货款" });
+            await saveItem("expenses", { supplierId: s2, amount: 12000, category: "设备采购", date: today, isConfirmed: true, currency: "CNY", note: "已付清" });
         }
         await loadData(); renderAll();
     }
 
-    function renderAll() { renderDashboard(); renderSupplierCards(); renderExpenses(); renderAccounts(); updateReport(); updateBudgetUI(); }
+    // 更新供应商已付金额（根据已确认的支出）
+    async function updateSupplierPaid(supplierId) {
+        const paidTotal = appData.expenses.filter(e => e.supplierId === supplierId && e.isConfirmed).reduce((s, e) => s + e.amount, 0);
+        const sup = appData.suppliers.find(s => s.id === supplierId);
+        if (sup) { sup.totalPaid = paidTotal; await saveItem("suppliers", sup); }
+    }
+
+    // ==================== 渲染所有 ====================
+    async function renderAll() {
+        await loadData();
+        renderDashboard();
+        renderSuppliers();
+        renderExpenses();
+        renderSystemAccounts();
+        updateReport();
+        updateBudgetUI();
+        populateSelectors();
+    }
 
     function renderDashboard() {
         const storageSum = appData.suppliers.reduce((s,p)=>s+(p.totalStorage||0),0);
@@ -151,35 +185,189 @@
         document.getElementById("statTotalPaid").innerHTML = `¥${paidSum.toFixed(2)}`;
         document.getElementById("statTotalDue").innerHTML = `¥${(storageSum - paidSum).toFixed(2)}`;
         const pending = appData.expenses.filter(e => !e.isConfirmed);
-        document.getElementById("pendingList").innerHTML = pending.map(e=>{ let sup = appData.suppliers.find(s=>s.id==e.supplierId); return `<div class="flex justify-between text-sm border-b py-1"><span>${sup?.name||'供应商'} ${e.amount}</span><button data-id="${e.id}" class="confirmSingle text-green-600 text-xs">确认打款</button></div>`; }).join('');
-        document.querySelectorAll('.confirmSingle').forEach(btn=>btn.addEventListener('click',async()=>{ let expense = appData.expenses.find(e=>e.id==parseInt(btn.dataset.id)); if(expense){ expense.isConfirmed = true; await saveItem("expenses", expense); await loadData(); renderAll(); } }));
+        document.getElementById("pendingList").innerHTML = pending.map(e=>{ let sup = appData.suppliers.find(s=>s.id==e.supplierId); return `<div class="flex justify-between text-sm border-b py-1"><span>${sup?.name||'供应商'} ${e.amount} ${e.currency}</span><button data-id="${e.id}" class="confirmSingle text-green-600 text-xs">确认打款</button></div>`; }).join('');
+        document.querySelectorAll('.confirmSingle').forEach(btn=>btn.addEventListener('click',async()=>{ let expense = appData.expenses.find(e=>e.id==parseInt(btn.dataset.id)); if(expense){ expense.isConfirmed = true; await saveItem("expenses", expense); await updateSupplierPaid(expense.supplierId); await renderAll(); } }));
         const currentMonth = new Date().toISOString().slice(0,7);
         const budgetTotal = appData.budgets[currentMonth] || 0;
         const monthExpenses = appData.expenses.filter(e=>e.date?.startsWith(currentMonth) && e.isConfirmed).reduce((s,e)=>s+e.amount,0);
         const percent = budgetTotal > 0 ? Math.min(100, (monthExpenses/budgetTotal)*100) : 0;
         document.getElementById("budgetProgress").innerHTML = `${percent.toFixed(1)}% (${monthExpenses}/${budgetTotal})`;
         document.getElementById("budgetBar").style.width = `${percent}%`;
-        // 趋势图简易
+        // 近6月趋势
         const months = Array(6).fill().map((_,i)=>{ let d = new Date(); d.setMonth(d.getMonth()-i); return d.toISOString().slice(0,7); }).reverse();
         const series = months.map(m => appData.expenses.filter(e=>e.date?.startsWith(m) && e.isConfirmed).reduce((s,e)=>s+e.amount,0));
         const ctx = document.getElementById('trendChart').getContext('2d'); if(window.trendChart) window.trendChart.destroy();
-        window.trendChart = new Chart(ctx, { type:'line', data:{ labels:months, datasets:[{ label:'月度支出', data:series, borderColor:'#4f46e5', fill:false }] } });
+        window.trendChart = new Chart(ctx, { type:'line', data:{ labels:months, datasets:[{ label:'月度支出(¥)', data:series, borderColor:'#4f46e5', fill:false, tension:0.2 }] } });
     }
 
-    function renderSupplierCards() {
+    function renderSuppliers() {
         const container = document.getElementById("supplierCards");
-        container.innerHTML = appData.suppliers.map(s => `<div class="bg-white rounded-xl p-4 shadow-sm"><div class="flex justify-between"><div><div class="font-bold">${s.name}</div><div class="text-sm text-gray-500">${s.products||''}</div><div class="text-sm mt-1">入库:¥${(s.totalStorage||0)} | 已付:¥${(s.totalPaid||0)}</div></div><div><button data-id="${s.id}" class="editSupBtn text-indigo-600 text-sm mr-2"><i class="fas fa-edit"></i></button><button data-id="${s.id}" class="quickPayBtn text-emerald-600 text-sm"><i class="fas fa-hand-holding-usd"></i></button></div></div></div>`).join('');
+        container.innerHTML = appData.suppliers.map(s => `<div class="bg-white rounded-xl p-4 shadow-sm"><div class="flex justify-between"><div><div class="font-bold">${s.name}</div><div class="text-sm text-gray-500">📦 ${s.products||'未填写'} | ${s.paymentType}</div><div class="text-sm mt-1">入库:¥${(s.totalStorage||0)} | 已付:¥${(s.totalPaid||0)}</div></div><div><button data-id="${s.id}" class="editSupBtn text-indigo-600 text-sm mr-2"><i class="fas fa-edit"></i></button><button data-id="${s.id}" class="quickPayBtn text-emerald-600 text-sm"><i class="fas fa-hand-holding-usd"></i></button><button data-id="${s.id}" class="viewSupAccBtn text-gray-500 text-sm ml-1"><i class="fas fa-university"></i></button></div></div></div>`).join('');
         document.querySelectorAll('.editSupBtn').forEach(btn=>btn.addEventListener('click',()=>openSupplierModal(parseInt(btn.dataset.id))));
         document.querySelectorAll('.quickPayBtn').forEach(btn=>btn.addEventListener('click',()=>quickAddExpense(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.viewSupAccBtn').forEach(btn=>btn.addEventListener('click',async()=>{ let id=parseInt(btn.dataset.id); let accs=appData.supplierAccounts.filter(a=>a.supplierId===id); alert(accs.map(a=>`${a.accountName} (${a.accountType==='public'?'对公':'私用'}): ${a.accountNumber} ${a.bankName}`).join('\n')||'无账户'); }));
     }
-    function openSupplierModal(id) { }
-    function quickAddExpense(supId) { document.getElementById("expSupId").value = supId; document.getElementById("expenseModal").classList.remove("hidden"); }
-    function renderExpenses() { /* 渲染表格略 */ }
-    function renderAccounts() { /* 账户列表 + 余额 */ }
-    function updateReport() { }
-    function updateBudgetUI() { }
 
-    window.onload = async () => { await openDB(); await initMock(); document.querySelectorAll(".tab-btn").forEach(btn=>btn.onclick=()=>{ let t=btn.dataset.tab; document.querySelectorAll(".tab-panel").forEach(p=>p.classList.add("hidden")); document.getElementById(`${t}Panel`).classList.remove("hidden"); }); document.querySelector(".tab-btn").click(); };
+    function renderExpenses() {
+        const filterSup = document.getElementById("expenseFilterSupplier").value;
+        const filterCat = document.getElementById("expenseCategoryFilter").value;
+        let filtered = appData.expenses;
+        if(filterSup !== "all") filtered = filtered.filter(e => e.supplierId == filterSup);
+        if(filterCat !== "all") filtered = filtered.filter(e => e.category === filterCat);
+        const tbody = document.getElementById("expensesTbody");
+        tbody.innerHTML = filtered.map(e => { const sup = appData.suppliers.find(s=>s.id===e.supplierId); return `<tr class="border-b"><td class="px-4 py-2">${e.date}</td><td class="px-4 py-2">${sup?.name||'已删除'}</td><td class="px-4 py-2">${e.category}</td><td class="px-4 py-2">${e.amount} ${e.currency}</td><td class="px-4 py-2">${e.currency}</td><td class="px-4 py-2">${e.isConfirmed?'<span class="text-green-600 bg-green-50 px-2 py-0.5 rounded-full text-xs">已确认</span>':'<span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full text-xs">待确认</span>'}</td><td class="px-4 py-2">${!e.isConfirmed?`<button data-id="${e.id}" class="confirmExpBtn text-green-600 mr-2">确认</button>`:''}<button data-id="${e.id}" class="delExpBtn text-red-500">删除</button></td></tr>`; }).join('');
+        document.querySelectorAll('.confirmExpBtn').forEach(btn=>btn.addEventListener('click',async()=>{ let expense = appData.expenses.find(e=>e.id==parseInt(btn.dataset.id)); if(expense){ expense.isConfirmed=true; await saveItem("expenses",expense); await updateSupplierPaid(expense.supplierId); await renderAll(); } }));
+        document.querySelectorAll('.delExpBtn').forEach(btn=>btn.addEventListener('click',async()=>{ if(confirm('删除支出记录？')){ await deleteItem("expenses", parseInt(btn.dataset.id)); await renderAll(); } }));
+    }
+
+    function renderSystemAccounts() {
+        const container = document.getElementById("accountsListContainer");
+        if(!container) return;
+        container.innerHTML = appData.systemAccounts.map(acc => `<div class="flex justify-between items-center border-b py-2"><div><div class="font-medium">${acc.name}</div><div class="text-xs text-gray-500">${acc.type} · ${acc.currency}</div></div><div class="font-mono">${acc.balance.toFixed(2)} ${acc.currency}</div><div><button data-id="${acc.id}" class="delAccBtn text-red-400 text-xs">删除</button></div></div>`).join('');
+        document.querySelectorAll('.delAccBtn').forEach(btn=>btn.addEventListener('click',async()=>{ await deleteItem("systemAccounts", parseInt(btn.dataset.id)); renderAll(); }));
+    }
+
+    function populateSelectors() {
+        const supSelect = document.getElementById("expenseFilterSupplier");
+        supSelect.innerHTML = '<option value="all">所有供应商</option>' + appData.suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+        const supSelectExp = document.getElementById("expSupId");
+        supSelectExp.innerHTML = '<option value="">选择供应商</option>' + appData.suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+        // 转账下拉
+        const fromSelect = document.getElementById("transferFromAcc");
+        const toSelect = document.getElementById("transferToAcc");
+        fromSelect.innerHTML = toSelect.innerHTML = appData.systemAccounts.map(acc=>`<option value="${acc.id}">${acc.name} (${acc.balance} ${acc.currency})</option>`).join('');
+    }
+
+    // 报表与预算
+    function updateReport() {
+        const year = document.getElementById("reportYear").value;
+        const type = document.getElementById("reportType").value;
+        if(type === "profit") {
+            const months = Array(12).fill().map((_,i)=>`${year}-${String(i+1).padStart(2,'0')}`);
+            const income = months.map(()=>0); // 收入暂为0
+            const expenseData = months.map(m => appData.expenses.filter(e=>e.date?.startsWith(m) && e.isConfirmed).reduce((s,e)=>s+e.amount,0));
+            const ctx = document.getElementById("reportChart").getContext("2d"); if(window.reportChart) window.reportChart.destroy();
+            window.reportChart = new Chart(ctx, { type:'bar', data:{ labels:months, datasets:[{ label:'支出', data:expenseData, backgroundColor:'#f97316' }] } });
+            document.getElementById("reportTable").innerHTML = `<table class="min-w-full"><tr><th>月份</th><th>支出(¥)</th></tr>${months.map((m,i)=>`<tr><td>${m}</td><td>${expenseData[i]}</td></tr>`).join('')}</table>`;
+        }
+    }
+
+    function updateBudgetUI() {
+        const currentMonth = new Date().toISOString().slice(0,7);
+        document.getElementById("budgetMonth").value = currentMonth;
+        const detailDiv = document.getElementById("budgetDetail");
+        const budgetsArr = Object.entries(appData.budgets).map(([month, total])=>({month,total}));
+        detailDiv.innerHTML = budgetsArr.map(b=>{ const spent = appData.expenses.filter(e=>e.date?.startsWith(b.month) && e.isConfirmed).reduce((s,e)=>s+e.amount,0); return `<div class="flex justify-between border-b py-1"><span>${b.month}</span><span>预算:${b.total}</span><span>实际:${spent}</span><span>${((spent/b.total)*100).toFixed(0)}%</span></div>`; }).join('');
+    }
+
+    // 弹窗与交互
+    let currentEditSupplierId = null;
+    function openSupplierModal(id=null) {
+        currentEditSupplierId = id;
+        document.getElementById("modalTitle").innerText = id ? "编辑供应商" : "新增供应商";
+        if(id){
+            const sup = appData.suppliers.find(s=>s.id===id);
+            document.getElementById("supplierId").value = sup.id;
+            document.getElementById("supName").value = sup.name;
+            document.getElementById("supProducts").value = sup.products||"";
+            document.getElementById("supPayType").value = sup.paymentType;
+            document.getElementById("supStorage").value = sup.totalStorage;
+        } else {
+            document.getElementById("supplierForm").reset();
+            document.getElementById("supplierId").value = "";
+        }
+        document.getElementById("supplierModal").classList.remove("hidden");
+    }
+
+    function quickAddExpense(supId=null) {
+        if(supId) document.getElementById("expSupId").value = supId;
+        document.getElementById("expenseModal").classList.remove("hidden");
+    }
+
+    // 事件绑定
+    window.onload = async () => {
+        await openDB();
+        await initMock();
+        document.querySelectorAll(".tab-btn").forEach(btn=>btn.onclick=()=>{ let t=btn.dataset.tab; document.querySelectorAll(".tab-panel").forEach(p=>p.classList.add("hidden")); document.getElementById(`${t}Panel`).classList.remove("hidden"); });
+        document.querySelector(".tab-btn").click();
+        document.getElementById("addSupplierBtn").onclick = ()=>openSupplierModal(null);
+        document.getElementById("quickAddExpenseBtn").onclick = ()=>quickAddExpense();
+        document.getElementById("closeModalBtn").onclick = ()=>document.getElementById("supplierModal").classList.add("hidden");
+        document.getElementById("cancelModalBtn").onclick = ()=>document.getElementById("supplierModal").classList.add("hidden");
+        document.getElementById("closeExpModal").onclick = ()=>document.getElementById("expenseModal").classList.add("hidden");
+        document.getElementById("saveExpenseBtn").onclick = async()=>{
+            const supId = parseInt(document.getElementById("expSupId").value);
+            const amount = parseFloat(document.getElementById("expAmount").value);
+            const currency = document.getElementById("expCurrency").value;
+            const category = document.getElementById("expCategory").value;
+            const date = document.getElementById("expDate").value;
+            const note = document.getElementById("expNote").value;
+            if(!supId || isNaN(amount)) return alert("请填写完整");
+            await saveItem("expenses", { supplierId:supId, amount, currency, category, date, isConfirmed:false, note });
+            await renderAll();
+            document.getElementById("expenseModal").classList.add("hidden");
+        };
+        document.getElementById("addAccountBtnMain").onclick = ()=>document.getElementById("accountModal").classList.remove("hidden");
+        document.getElementById("closeAccModal").onclick = ()=>document.getElementById("accountModal").classList.add("hidden");
+        document.getElementById("saveAccountBtn").onclick = async()=>{
+            const name = document.getElementById("accName").value;
+            const type = document.getElementById("accType").value;
+            const currency = document.getElementById("accCurrency").value;
+            const balance = parseFloat(document.getElementById("accBalance").value)||0;
+            if(!name) return alert("账户名称不能为空");
+            await saveItem("systemAccounts", { name, type, balance, currency });
+            await renderAll();
+            document.getElementById("accountModal").classList.add("hidden");
+        };
+        document.getElementById("doTransferBtn").onclick = async()=>{
+            const fromId = parseInt(document.getElementById("transferFromAcc").value);
+            const toId = parseInt(document.getElementById("transferToAcc").value);
+            const amount = parseFloat(document.getElementById("transferAmount").value);
+            if(fromId === toId) return alert("不能转给自己");
+            if(isNaN(amount) || amount<=0) return alert("金额无效");
+            const fromAcc = appData.systemAccounts.find(a=>a.id===fromId);
+            const toAcc = appData.systemAccounts.find(a=>a.id===toId);
+            if(!fromAcc || !toAcc) return;
+            if(fromAcc.balance < amount) return alert("余额不足");
+            fromAcc.balance -= amount;
+            toAcc.balance += amount;
+            await saveItem("systemAccounts", fromAcc);
+            await saveItem("systemAccounts", toAcc);
+            await saveItem("transfers", { fromId, toId, amount, date: new Date().toISOString().slice(0,10) });
+            await renderAll();
+            alert("转账成功");
+        };
+        document.getElementById("generateReportBtn").onclick = updateReport;
+        document.getElementById("saveBudgetBtn").onclick = async()=>{
+            const month = document.getElementById("budgetMonth").value;
+            const budget = parseFloat(document.getElementById("budgetAmount").value);
+            if(!month || isNaN(budget)) return;
+            await saveItem("budgets", { month, totalBudget: budget });
+            await renderAll();
+        };
+        document.getElementById("refreshExpensesBtn").onclick = ()=>renderExpenses();
+        document.getElementById("logoutBtn").onclick = ()=>{
+            // Staticrypt 环境中，logout 只是简单刷新页面重新要求密码
+            window.location.reload();
+        };
+        // 供应商表单提交
+        document.getElementById("supplierForm").addEventListener("submit", async(e)=>{
+            e.preventDefault();
+            const id = document.getElementById("supplierId").value;
+            const supData = {
+                name: document.getElementById("supName").value,
+                products: document.getElementById("supProducts").value,
+                paymentType: document.getElementById("supPayType").value,
+                totalStorage: parseFloat(document.getElementById("supStorage").value)||0,
+                totalPaid: id ? (appData.suppliers.find(s=>s.id==parseInt(id))?.totalPaid||0) : 0
+            };
+            if(id) supData.id = parseInt(id);
+            const savedId = await saveItem("suppliers", supData);
+            // 保存供应商账户（简单处理，暂未做UI）
+            await renderAll();
+            document.getElementById("supplierModal").classList.add("hidden");
+        });
+    };
 </script>
 </body>
 </html>
