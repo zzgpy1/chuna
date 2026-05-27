@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>出纳管理系统 · 专业版</title>
+    <title>出纳管理系统 · 供应商+收支+预算</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -11,9 +11,9 @@
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f1f5f9; }
-        .card-hover { transition: all 0.2s; }
-        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
-        ::-webkit-scrollbar { width: 6px; }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
         .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; }
@@ -21,35 +21,33 @@
 </head>
 <body class="antialiased">
 
-<div id="app" class="min-h-screen">
-    <!-- 顶部导航 -->
+<div id="appRoot" class="min-h-screen">
     <nav class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-20 border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
                     <div class="bg-indigo-100 p-2 rounded-xl"><i class="fas fa-landmark text-indigo-700 text-xl"></i></div>
-                    <span class="font-bold text-xl text-gray-800">出纳系统 <span class="text-indigo-500 text-sm ml-1">供应商/收支/预算</span></span>
+                    <span class="font-bold text-xl text-gray-800">出纳系统 <span class="text-indigo-500 text-sm ml-1">专业版</span></span>
+                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full hidden sm:block">供应商 | 多币种 | 预算</span>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <span class="text-sm text-gray-600"><i class="far fa-user-circle mr-1"></i>财务主管</span>
-                    <button id="refreshAllBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-sync-alt"></i> 刷新</button>
+                    <span class="text-sm text-gray-600"><i class="far fa-user-circle mr-1"></i><span id="userDisplay">财务主管</span></span>
+                    <button id="logoutBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-lock mr-1"></i>锁定</button>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-        <!-- 选项卡 -->
         <div class="flex flex-wrap gap-1 border-b border-gray-200 pb-2 mb-6 overflow-x-auto">
-            <button data-tab="dashboard" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition"><i class="fas fa-tachometer-alt mr-2"></i>仪表板</button>
-            <button data-tab="suppliers" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition"><i class="fas fa-truck mr-2"></i>供应商管理</button>
-            <button data-tab="expenses" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition"><i class="fas fa-receipt mr-2"></i>收支记录</button>
-            <button data-tab="accounts" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition"><i class="fas fa-wallet mr-2"></i>账户/转账</button>
-            <button data-tab="reports" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition"><i class="fas fa-chart-pie mr-2"></i>报表统计</button>
-            <button data-tab="budget" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition"><i class="fas fa-chart-line mr-2"></i>预算分析</button>
+            <button data-tab="dashboard" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-tachometer-alt"></i> 仪表板</button>
+            <button data-tab="suppliers" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-truck"></i> 供应商管理</button>
+            <button data-tab="expenses" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-receipt"></i> 收支记录</button>
+            <button data-tab="accounts" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-wallet"></i> 账户/转账</button>
+            <button data-tab="reports" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-chart-pie"></i> 报表统计</button>
+            <button data-tab="budget" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-chart-line"></i> 预算分析</button>
         </div>
 
-        <!-- 仪表板面板 -->
         <div id="dashboardPanel" class="tab-panel">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-7">
                 <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-indigo-500"><div class="text-gray-500 text-sm">📦 供应商总数</div><div class="text-2xl font-bold" id="statSupplierCount">0</div></div>
@@ -59,36 +57,31 @@
                 <div class="bg-white rounded-2xl p-5 shadow-sm col-span-2"><div class="text-gray-500 text-sm">📅 本月预算执行率</div><div class="text-2xl font-bold" id="budgetProgress">0%</div><div class="w-full bg-gray-200 rounded-full h-2 mt-2"><div id="budgetBar" class="bg-indigo-600 h-2 rounded-full" style="width:0%"></div></div></div>
                 <div class="bg-white rounded-2xl p-5 shadow-sm col-span-2"><div class="text-gray-500 text-sm">🔄 近期待确认付款</div><div id="pendingList" class="max-h-24 overflow-y-auto text-sm"></div></div>
             </div>
-            <div class="bg-white rounded-2xl p-5 shadow-sm"><div class="font-semibold mb-3"><i class="fas fa-chart-line mr-2 text-indigo-500"></i>近6月支出趋势</div><canvas id="trendChart" height="90"></canvas></div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm"><div class="font-semibold mb-3"><i class="fas fa-chart-line mr-2 text-indigo-500"></i>近6月收支趋势</div><canvas id="trendChart" height="90"></canvas></div>
         </div>
 
-        <!-- 供应商管理面板 -->
         <div id="suppliersPanel" class="tab-panel hidden">
             <div class="flex justify-between items-center mb-5"><h2 class="text-xl font-bold"><i class="fas fa-truck mr-2"></i>往来供应商</h2><button id="addSupplierBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow-sm"><i class="fas fa-plus mr-1"></i>新增供应商</button></div>
             <div id="supplierCards" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
         </div>
 
-        <!-- 收支记录面板 -->
         <div id="expensesPanel" class="tab-panel hidden">
             <div class="bg-white rounded-2xl shadow-sm p-5 mb-5">
                 <div class="flex flex-wrap justify-between items-center gap-3"><h2 class="font-semibold text-lg"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>登记支出/付款</h2><button id="quickAddExpenseBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus-circle"></i> 新增支出</button></div>
                 <div class="flex flex-wrap gap-4 mt-3"><select id="expenseFilterSupplier" class="border rounded-lg px-3 py-1.5 text-sm"><option value="all">所有供应商</option></select><select id="expenseCategoryFilter" class="border rounded-lg px-3 py-1.5 text-sm"><option value="all">全部类别</option></select><button id="refreshExpensesBtn" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-sync-alt"></i> 刷新</button></div>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm overflow-x-auto"><table class="min-w-full divide-y"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left text-xs">日期</th><th class="px-4 py-3 text-left text-xs">供应商</th><th class="px-4 py-3 text-left text-xs">类别</th><th class="px-4 py-3 text-left text-xs">金额</th><th class="px-4 py-3 text-left text-xs">币种</th><th class="px-4 py-3 text-left text-xs">状态</th><th class="px-4 py-3 text-left text-xs">操作</th></thead><tbody id="expensesTbody"></tbody>}</div>
+            <div class="bg-white rounded-2xl shadow-sm overflow-x-auto"><table class="min-w-full divide-y"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left text-xs">日期</th><th class="px-4 py-3 text-left text-xs">供应商</th><th class="px-4 py-3 text-left text-xs">类别</th><th class="px-4 py-3 text-left text-xs">金额</th><th class="px-4 py-3 text-left text-xs">币种</th><th class="px-4 py-3 text-left text-xs">状态</th><th class="px-4 py-3 text-left text-xs">操作</th></thead><tbody id="expensesTbody"></tbody></table></div>
         </div>
 
-        <!-- 账户/转账面板 -->
         <div id="accountsPanel" class="tab-panel hidden">
             <div class="grid md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-university"></i> 资金账户</h3><div id="accountsListContainer"></div><button id="addAccountBtnMain" class="mt-3 bg-indigo-50 text-indigo-600 text-sm px-3 py-1.5 rounded-lg"><i class="fas fa-plus-circle"></i> 新增账户</button></div><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-exchange-alt"></i> 账户间转账</h3><select id="transferFromAcc" class="w-full border rounded-lg p-2 mb-2"></select><select id="transferToAcc" class="w-full border rounded-lg p-2 mb-2"></select><input type="number" id="transferAmount" placeholder="转账金额" class="w-full border rounded-lg p-2 mb-2"><button id="doTransferBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg">确认转账</button></div></div>
         </div>
 
-        <!-- 报表统计面板 -->
         <div id="reportsPanel" class="tab-panel hidden">
-            <div class="bg-white rounded-2xl p-5 mb-5"><div class="flex flex-wrap gap-4"><div><label>报表类型</label><select id="reportType" class="border rounded-lg p-2"><option value="profit">利润表(支出)</option><option value="cashflow">现金流量</option></select></div><div><label>年份</label><input type="number" id="reportYear" value="2026" class="border rounded-lg p-2 w-24"></div><button id="generateReportBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">生成报表</button></div></div>
+            <div class="bg-white rounded-2xl p-5 mb-5"><div class="flex flex-wrap gap-4"><div><label>报表类型</label><select id="reportType" class="border rounded-lg p-2"><option value="profit">利润表(收支)</option><option value="cashflow">现金流量</option></select></div><div><label>年份</label><input type="number" id="reportYear" value="2026" class="border rounded-lg p-2 w-24"></div><button id="generateReportBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">生成报表</button></div></div>
             <div class="bg-white rounded-2xl p-5"><canvas id="reportChart" height="100"></canvas><div id="reportTable" class="mt-4 overflow-x-auto"></div></div>
         </div>
 
-        <!-- 预算分析面板 -->
         <div id="budgetPanel" class="tab-panel hidden">
             <div class="bg-white rounded-2xl p-5"><h3 class="font-bold text-lg">月度预算设置</h3><div class="grid md:grid-cols-2 gap-4 mt-3"><div><label>预算月份</label><input type="month" id="budgetMonth" class="border rounded-lg p-2 w-full"></div><div><label>总预算(CNY)</label><input type="number" id="budgetAmount" step="100" class="border rounded-lg p-2 w-full"></div></div><button id="saveBudgetBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg mt-2">保存预算</button></div>
             <div class="bg-white rounded-2xl p-5 mt-5"><div class="font-semibold">预算执行详情</div><div id="budgetDetail" class="mt-3 space-y-2"></div></div>
@@ -106,10 +99,9 @@
 <div id="accountModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 class="text-xl font-bold mb-3">新建账户</h3><input id="accName" placeholder="账户名称(例:工商银行)" class="w-full border rounded-lg p-2 mb-2"><select id="accType" class="w-full border rounded-lg p-2 mb-2"><option value="bank">银行账户</option><option value="wechat">微信</option><option value="alipay">支付宝</option><option value="cash">现金</option></select><select id="accCurrency" class="w-full border rounded-lg p-2 mb-2"><option value="CNY">CNY</option><option value="USD">USD</option><option value="EUR">EUR</option></select><input id="accBalance" type="number" placeholder="初始余额" class="w-full border rounded-lg p-2 mb-2"><div class="flex justify-end gap-2"><button id="closeAccModal" class="border px-3 py-1.5 rounded-lg">取消</button><button id="saveAccountBtn" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg">创建账户</button></div></div></div>
 
 <script>
-    // ==================== IndexedDB 初始化 ====================
     let db = null;
     const DB_NAME = "CashierPro";
-    const DB_VERSION = 8;
+    const DB_VERSION = 7;
 
     function openDB() {
         return new Promise((resolve) => {
@@ -234,11 +226,14 @@
 
     function updateReport() {
         const year = document.getElementById("reportYear").value;
-        const months = Array(12).fill().map((_,i)=>`${year}-${String(i+1).padStart(2,'0')}`);
-        const expenseData = months.map(m => appData.expenses.filter(e=>e.date?.startsWith(m) && e.isConfirmed).reduce((s,e)=>s+e.amount,0));
-        const ctx = document.getElementById("reportChart").getContext("2d"); if(window.reportChart) window.reportChart.destroy();
-        window.reportChart = new Chart(ctx, { type:'bar', data:{ labels:months, datasets:[{ label:'支出(¥)', data:expenseData, backgroundColor:'#f97316' }] } });
-        document.getElementById("reportTable").innerHTML = `<table class="min-w-full"><tr><th>月份</th><th>支出(¥)</th></thead><tbody>${months.map((m,i)=>`<tr><td>${m}</td><td>${expenseData[i]}</td></tr>`).join('')}</tbody></table>`;
+        const type = document.getElementById("reportType").value;
+        if(type === "profit") {
+            const months = Array(12).fill().map((_,i)=>`${year}-${String(i+1).padStart(2,'0')}`);
+            const expenseData = months.map(m => appData.expenses.filter(e=>e.date?.startsWith(m) && e.isConfirmed).reduce((s,e)=>s+e.amount,0));
+            const ctx = document.getElementById("reportChart").getContext("2d"); if(window.reportChart) window.reportChart.destroy();
+            window.reportChart = new Chart(ctx, { type:'bar', data:{ labels:months, datasets:[{ label:'支出', data:expenseData, backgroundColor:'#f97316' }] } });
+            document.getElementById("reportTable").innerHTML = `<table class="min-w-full"><tr><th>月份</th><th>支出(¥)</th></tr>${months.map((m,i)=>`<tr><td>${m}</td><td>${expenseData[i]}</td></tr>`).join('')}</table>`;
+        }
     }
 
     function updateBudgetUI() {
@@ -249,7 +244,9 @@
         detailDiv.innerHTML = budgetsArr.map(b=>{ const spent = appData.expenses.filter(e=>e.date?.startsWith(b.month) && e.isConfirmed).reduce((s,e)=>s+e.amount,0); return `<div class="flex justify-between border-b py-1"><span>${b.month}</span><span>预算:${b.total}</span><span>实际:${spent}</span><span>${((spent/b.total)*100).toFixed(0)}%</span></div>`; }).join('');
     }
 
+    let currentEditSupplierId = null;
     function openSupplierModal(id=null) {
+        currentEditSupplierId = id;
         document.getElementById("modalTitle").innerText = id ? "编辑供应商" : "新增供应商";
         if(id){
             const sup = appData.suppliers.find(s=>s.id===id);
@@ -331,7 +328,7 @@
             await renderAll();
         };
         document.getElementById("refreshExpensesBtn").onclick = ()=>renderExpenses();
-        document.getElementById("refreshAllBtn").onclick = ()=>renderAll();
+        document.getElementById("logoutBtn").onclick = ()=>{ window.location.reload(); };
         document.getElementById("supplierForm").addEventListener("submit", async(e)=>{
             e.preventDefault();
             const id = document.getElementById("supplierId").value;
