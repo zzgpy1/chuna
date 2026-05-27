@@ -25,10 +25,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # 不再使用缓存，避免锁文件缺失问题
       
       - name: Install dependencies
-        run: npm ci
+        run: npm install   # 改为 npm install，不要求锁文件
       
       - name: Build with env
         run: |
