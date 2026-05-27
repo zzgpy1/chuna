@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>出纳管理系统 · 供应商账务+收支管理</title>
+    <!-- TailwindCSS + Font Awesome + Chart.js + 日期选择器 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; }
+    </style>
+</head>
+<body class="antialiased">
+
+<!-- 主应用容器，Staticrypt 加密后显示，验证成功后展示 -->
+<div id="appRoot" class="min-h-screen">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-20 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-100 p-2 rounded-xl"><i class="fas fa-landmark text-indigo-700 text-xl"></i></div>
+                    <span class="font-bold text-xl text-gray-800">出纳系统 <span class="text-indigo-500 text-sm ml-1">增强版</span></span>
+                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full hidden sm:block">供应商+收支+预算</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm text-gray-600"><i class="far fa-user-circle mr-1"></i><span id="userDisplay">出纳员</span></span>
+                    <button id="logoutBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-lock mr-1"></i>锁定</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <!-- 选项卡 -->
+        <div class="flex flex-wrap gap-1 border-b border-gray-200 pb-2 mb-6 overflow-x-auto">
+            <button data-tab="dashboard" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-tachometer-alt"></i> 仪表板</button>
+            <button data-tab="suppliers" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-truck"></i> 供应商管理</button>
+            <button data-tab="expenses" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-receipt"></i> 收支记录</button>
+            <button data-tab="accounts" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-wallet"></i> 账户/转账</button>
+            <button data-tab="reports" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-chart-pie"></i> 报表统计</button>
+            <button data-tab="budget" class="tab-btn px-5 py-2.5 rounded-t-xl font-medium text-gray-600 hover:text-indigo-600 transition flex items-center gap-2"><i class="fas fa-chart-line"></i> 预算分析</button>
+        </div>
+
+        <!-- 1. 仪表板 -->
+        <div id="dashboardPanel" class="tab-panel">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-7">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-indigo-500"><div class="text-gray-500 text-sm">📦 供应商总数</div><div class="text-2xl font-bold" id="statSupplierCount">0</div></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-emerald-500"><div class="text-gray-500 text-sm">💰 总入库金额</div><div class="text-2xl font-bold" id="statTotalStorage">¥0</div></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-blue-500"><div class="text-gray-500 text-sm">✅ 已付总额</div><div class="text-2xl font-bold" id="statTotalPaid">¥0</div></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-amber-500"><div class="text-gray-500 text-sm">⏳ 未付款金额</div><div class="text-2xl font-bold" id="statTotalDue">¥0</div></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm col-span-2"><div class="text-gray-500 text-sm">📅 本月预算执行率</div><div class="text-2xl font-bold" id="budgetProgress">0%</div><div class="w-full bg-gray-200 rounded-full h-2 mt-2"><div id="budgetBar" class="bg-indigo-600 h-2 rounded-full" style="width:0%"></div></div></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm col-span-2"><div class="text-gray-500 text-sm">🔄 近期待确认付款</div><div id="pendingList" class="max-h-24 overflow-y-auto text-sm"></div></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm"><div class="font-semibold mb-3"><i class="fas fa-chart-line mr-2 text-indigo-500"></i>近6月收支趋势</div><canvas id="trendChart" height="90"></canvas></div>
+        </div>
+
+        <!-- 2. 供应商管理 -->
+        <div id="suppliersPanel" class="tab-panel hidden">
+            <div class="flex justify-between items-center mb-5"><h2 class="text-xl font-bold"><i class="fas fa-truck mr-2"></i>往来供应商</h2><button id="addSupplierBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow-sm"><i class="fas fa-plus mr-1"></i>新增供应商</button></div>
+            <div id="supplierCards" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+        </div>
+
+        <!-- 3. 收支记录（费用类别 + 付款） -->
+        <div id="expensesPanel" class="tab-panel hidden">
+            <div class="bg-white rounded-2xl shadow-sm p-5 mb-5">
+                <div class="flex flex-wrap justify-between items-center gap-3"><h2 class="font-semibold text-lg"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>新增支出/付款</h2><button id="quickAddExpenseBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm"><i class="fas fa-plus-circle"></i> 登记支出</button></div>
+                <div class="flex flex-wrap gap-4 mt-3"><select id="expenseFilterSupplier" class="border rounded-lg px-3 py-1.5 text-sm"><option value="all">所有供应商</option></select><select id="expenseCategoryFilter" class="border rounded-lg px-3 py-1.5 text-sm"><option value="all">全部类别</option></select><button id="refreshExpensesBtn" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm"><i class="fas fa-sync-alt"></i> 刷新</button></div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm overflow-x-auto"><table class="min-w-full divide-y"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left text-xs">日期</th><th class="px-4 py-3 text-left text-xs">供应商</th><th class="px-4 py-3 text-left text-xs">类别</th><th class="px-4 py-3 text-left text-xs">金额</th><th class="px-4 py-3 text-left text-xs">币种</th><th class="px-4 py-3 text-left text-xs">确认状态</th><th class="px-4 py-3 text-left text-xs">操作</th></tr></thead><tbody id="expensesTbody"></tbody></table></div>
+        </div>
+
+        <!-- 4. 账户/转账 -->
+        <div id="accountsPanel" class="tab-panel hidden">
+            <div class="grid md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-university"></i> 资金账户</h3><div id="accountsList"></div><button id="addAccountBtnMain" class="mt-3 bg-indigo-50 text-indigo-600 text-sm px-3 py-1.5 rounded-lg"><i class="fas fa-plus-circle"></i> 新增账户</button></div><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold text-lg mb-3"><i class="fas fa-exchange-alt"></i> 账户间转账</h3><select id="transferFromAcc" class="w-full border rounded-lg p-2 mb-2"></select><select id="transferToAcc" class="w-full border rounded-lg p-2 mb-2"></select><input type="number" id="transferAmount" placeholder="转账金额" class="w-full border rounded-lg p-2 mb-2"><button id="doTransferBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg">确认转账</button></div></div>
+        </div>
+
+        <!-- 5. 报表统计 -->
+        <div id="reportsPanel" class="tab-panel hidden">
+            <div class="bg-white rounded-2xl p-5 mb-5"><div class="flex flex-wrap gap-4"><div><label>报表类型</label><select id="reportType" class="border rounded-lg p-2"><option value="profit">利润表(收支)</option><option value="cashflow">现金流量</option></select></div><div><label>年份</label><input type="number" id="reportYear" value="2026" class="border rounded-lg p-2 w-24"></div><button id="generateReportBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">生成报表</button></div></div>
+            <div class="bg-white rounded-2xl p-5"><canvas id="reportChart" height="100"></canvas><div id="reportTable" class="mt-4 overflow-x-auto"></div></div>
+        </div>
+
+        <!-- 6. 预算分析 -->
+        <div id="budgetPanel" class="tab-panel hidden">
+            <div class="bg-white rounded-2xl p-5"><h3 class="font-bold text-lg">月度预算设置</h3><div class="grid md:grid-cols-2 gap-4 mt-3"><div><label>预算月份</label><input type="month" id="budgetMonth" class="border rounded-lg p-2 w-full"></div><div><label>总预算(CNY)</label><input type="number" id="budgetAmount" step="100" class="border rounded-lg p-2 w-full"></div></div><button id="saveBudgetBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg mt-2">保存预算</button></div>
+            <div class="bg-white rounded-2xl p-5 mt-5"><div class="font-semibold">预算执行详情</div><div id="budgetDetail" class="mt-3 space-y-2"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- 各类弹窗 -->
+<div id="supplierModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-auto"><div class="flex justify-between"><h3 id="modalTitle" class="text-xl font-bold">供应商信息</h3><button id="closeModalBtn" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button></div><form id="supplierForm"><input type="hidden" id="supplierId"><div class="grid grid-cols-2 gap-3 mt-3"><input id="supName" placeholder="名称*" class="border rounded-lg p-2"><input id="supProducts" placeholder="供应产品" class="border rounded-lg p-2"><select id="supPayType" class="border rounded-lg p-2"><option>预付款</option><option>后付款</option></select><input id="supStorage" type="number" placeholder="入库金额" class="border rounded-lg p-2"></div><div class="mt-2"><label class="text-sm font-medium">账户列表</label><div id="supplierAccounts"></div><button type="button" id="addAccountToSupplier" class="text-indigo-600 text-sm mt-1"><i class="fas fa-plus-circle"></i> 添加账户</button></div><div class="flex justify-end gap-2 mt-4"><button type="button" id="cancelModalBtn" class="border px-4 py-1.5 rounded-lg">取消</button><button type="submit" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg">保存</button></div></form></div></div>
+
+<div id="expenseModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"><div class="bg-white rounded-2xl w-full max-w-md p-6"><h3 class="text-xl font-bold mb-3">登记支出/付款</h3><select id="expSupId" class="w-full border rounded-lg p-2 mb-2"><option>选择供应商</option></select><input type="number" id="expAmount" placeholder="金额" class="w-full border rounded-lg p-2 mb-2"><select id="expCurrency" class="w-full border rounded-lg p-2 mb-2"><option value="CNY">CNY 人民币</option><option value="USD">USD 美元</option><option value="EUR">EUR 欧元</option></select><select id="expCategory" class="w-full border rounded-lg p-2 mb-2"><option value="原材料采购">原材料采购</option><option value="办公费用">办公费用</option><option value="运输物流">运输物流</option><option value="其他">其他</option></select><input type="date" id="expDate" class="w-full border rounded-lg p-2 mb-2"><textarea id="expNote" placeholder="备注" class="border rounded-lg p-2 mb-3"></textarea><div class="flex justify-end gap-2"><button id="closeExpModal" class="border px-3 py-1.5 rounded-lg">取消</button><button id="saveExpenseBtn" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg">保存(待确认)</button></div></div></div>
+
+<script>
+    // ================= IndexedDB 初始化 =================
+    let db = null;
+    const DB_VERSION = 5;
+    function openDB() {
+        return new Promise((resolve) => {
+            const req = indexedDB.open("CashierSystem", DB_VERSION);
+            req.onupgradeneeded = (e) => {
+                const d = e.target.result;
+                if (!d.objectStoreNames.contains("suppliers")) d.createObjectStore("suppliers", { keyPath: "id", autoIncrement: true });
+                if (!d.objectStoreNames.contains("accounts")) d.createObjectStore("accounts", { keyPath: "id", autoIncrement: true });
+                if (!d.objectStoreNames.contains("expenses")) d.createObjectStore("expenses", { keyPath: "id", autoIncrement: true });
+                if (!d.objectStoreNames.contains("transfers")) d.createObjectStore("transfers", { keyPath: "id", autoIncrement: true });
+                if (!d.objectStoreNames.contains("budgets")) d.createObjectStore("budgets", { keyPath: "month" });
+            };
+            req.onsuccess = () => { db = req.result; resolve(db); };
+        });
+    }
+    async function getAll(store) { return new Promise((res) => { const tx = db.transaction(store, 'readonly'), req = tx.objectStore(store).getAll(); req.onsuccess = () => res(req.result); }); }
+    async function saveItem(store, item) { return new Promise((res) => { const tx = db.transaction(store, 'readwrite'), req = tx.objectStore(store).put(item); req.onsuccess = () => res(req.result); }); }
+    async function deleteItem(store, id) { return new Promise((res) => { const tx = db.transaction(store, 'readwrite'), req = tx.objectStore(store).delete(id); req.onsuccess = () => res(); }); }
+
+    let appData = { suppliers: [], accounts: [], expenses: [], transfers: [], budgets: {} };
+    async function loadData() { appData.suppliers = await getAll("suppliers"); appData.accounts = await getAll("accounts"); appData.expenses = await getAll("expenses"); appData.transfers = await getAll("transfers"); const budgetsArr = await getAll("budgets"); budgetsArr.forEach(b => { appData.budgets[b.month] = b.totalBudget; }); }
+
+    async function initMock() {
+        if ((await getAll("suppliers")).length === 0) {
+            const s1 = await saveItem("suppliers", { name: "宏达钢材", products: "螺纹钢", paymentType: "后付款", totalStorage: 125000, totalPaid: 0 });
+            const s2 = await saveItem("suppliers", { name: "宏远电子", products: "电子元件", paymentType: "预付款", totalStorage: 68000, totalPaid: 0 });
+            await saveItem("accounts", { name: "建设银行对公", type: "bank", balance: 35000, currency: "CNY" });
+            await saveItem("accounts", { name: "微信零钱", type: "wechat", balance: 12000, currency: "CNY" });
+            await saveItem("expenses", { supplierId: s1, amount: 25000, category: "原材料采购", date: new Date().toISOString().slice(0,10), isConfirmed: false, currency: "CNY" });
+            await saveItem("expenses", { supplierId: s2, amount: 18000, category: "设备采购", date: new Date().toISOString().slice(0,10), isConfirmed: true, currency: "CNY" });
+        }
+        await loadData(); renderAll();
+    }
+
+    function renderAll() { renderDashboard(); renderSupplierCards(); renderExpenses(); renderAccounts(); updateReport(); updateBudgetUI(); }
+
+    function renderDashboard() {
+        const storageSum = appData.suppliers.reduce((s,p)=>s+(p.totalStorage||0),0);
+        const paidSum = appData.suppliers.reduce((s,p)=>s+(p.totalPaid||0),0);
+        document.getElementById("statSupplierCount").innerHTML = appData.suppliers.length;
+        document.getElementById("statTotalStorage").innerHTML = `¥${storageSum.toFixed(2)}`;
+        document.getElementById("statTotalPaid").innerHTML = `¥${paidSum.toFixed(2)}`;
+        document.getElementById("statTotalDue").innerHTML = `¥${(storageSum - paidSum).toFixed(2)}`;
+        const pending = appData.expenses.filter(e => !e.isConfirmed);
+        document.getElementById("pendingList").innerHTML = pending.map(e=>{ let sup = appData.suppliers.find(s=>s.id==e.supplierId); return `<div class="flex justify-between text-sm border-b py-1"><span>${sup?.name||'供应商'} ${e.amount}</span><button data-id="${e.id}" class="confirmSingle text-green-600 text-xs">确认打款</button></div>`; }).join('');
+        document.querySelectorAll('.confirmSingle').forEach(btn=>btn.addEventListener('click',async()=>{ let expense = appData.expenses.find(e=>e.id==parseInt(btn.dataset.id)); if(expense){ expense.isConfirmed = true; await saveItem("expenses", expense); await loadData(); renderAll(); } }));
+        const currentMonth = new Date().toISOString().slice(0,7);
+        const budgetTotal = appData.budgets[currentMonth] || 0;
+        const monthExpenses = appData.expenses.filter(e=>e.date?.startsWith(currentMonth) && e.isConfirmed).reduce((s,e)=>s+e.amount,0);
+        const percent = budgetTotal > 0 ? Math.min(100, (monthExpenses/budgetTotal)*100) : 0;
+        document.getElementById("budgetProgress").innerHTML = `${percent.toFixed(1)}% (${monthExpenses}/${budgetTotal})`;
+        document.getElementById("budgetBar").style.width = `${percent}%`;
+        // 趋势图简易
+        const months = Array(6).fill().map((_,i)=>{ let d = new Date(); d.setMonth(d.getMonth()-i); return d.toISOString().slice(0,7); }).reverse();
+        const series = months.map(m => appData.expenses.filter(e=>e.date?.startsWith(m) && e.isConfirmed).reduce((s,e)=>s+e.amount,0));
+        const ctx = document.getElementById('trendChart').getContext('2d'); if(window.trendChart) window.trendChart.destroy();
+        window.trendChart = new Chart(ctx, { type:'line', data:{ labels:months, datasets:[{ label:'月度支出', data:series, borderColor:'#4f46e5', fill:false }] } });
+    }
+
+    function renderSupplierCards() {
+        const container = document.getElementById("supplierCards");
+        container.innerHTML = appData.suppliers.map(s => `<div class="bg-white rounded-xl p-4 shadow-sm"><div class="flex justify-between"><div><div class="font-bold">${s.name}</div><div class="text-sm text-gray-500">${s.products||''}</div><div class="text-sm mt-1">入库:¥${(s.totalStorage||0)} | 已付:¥${(s.totalPaid||0)}</div></div><div><button data-id="${s.id}" class="editSupBtn text-indigo-600 text-sm mr-2"><i class="fas fa-edit"></i></button><button data-id="${s.id}" class="quickPayBtn text-emerald-600 text-sm"><i class="fas fa-hand-holding-usd"></i></button></div></div></div>`).join('');
+        document.querySelectorAll('.editSupBtn').forEach(btn=>btn.addEventListener('click',()=>openSupplierModal(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.quickPayBtn').forEach(btn=>btn.addEventListener('click',()=>quickAddExpense(parseInt(btn.dataset.id))));
+    }
+    function openSupplierModal(id) { }
+    function quickAddExpense(supId) { document.getElementById("expSupId").value = supId; document.getElementById("expenseModal").classList.remove("hidden"); }
+    function renderExpenses() { /* 渲染表格略 */ }
+    function renderAccounts() { /* 账户列表 + 余额 */ }
+    function updateReport() { }
+    function updateBudgetUI() { }
+
+    window.onload = async () => { await openDB(); await initMock(); document.querySelectorAll(".tab-btn").forEach(btn=>btn.onclick=()=>{ let t=btn.dataset.tab; document.querySelectorAll(".tab-panel").forEach(p=>p.classList.add("hidden")); document.getElementById(`${t}Panel`).classList.remove("hidden"); }); document.querySelector(".tab-btn").click(); };
+</script>
+</body>
+</html>
