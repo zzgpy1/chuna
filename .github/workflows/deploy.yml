@@ -10,10 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,19 +25,18 @@ jobs:
       - name: Install Staticrypt
         run: npm install -g staticrypt
 
-      - name: Encrypt HTML with GitHub Secret
-        # 密码从 GitHub Secrets 中读取，安全且不暴露
+      - name: Encrypt main.html with GitHub Secrets
         run: |
           staticrypt main.html \
-            --passphrase "${{ secrets.STATICRYPT_PASSWORD }}" \
-            --template-title "出纳管理系统 · 登录验证" \
-            --template-instructions "请输入访问密码，密码由管理员提供。" \
+            --passphrase "${{ secrets.LOGIN_PASSWORD }}" \
+            --template-title "出纳管理系统 · 安全访问" \
+            --template-instructions "请输入访问密码（由管理员提供）" \
             --template-button "验证进入" \
             --remember 72 \
             --short \
             -o index.html
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
