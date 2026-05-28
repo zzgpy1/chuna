@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, Select, DatePicker, message, Popconfirm, Card, Modal, Form, InputNumber, Input, Radio, Typography, Alert, Row, Col, Statistic } from 'antd';
-import { CheckCircleOutlined, DollarOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Tag, Select, DatePicker, message, Card, Modal, Form, InputNumber, Input, Radio, Alert } from 'antd';
+import { CheckCircleOutlined, DollarOutlined } from '@ant-design/icons';
 import { db } from '../db';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
-const { Text } = Typography;
 
 function Payments() {
   const [payments, setPayments] = useState([]);
@@ -18,9 +17,7 @@ function Payments() {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [availablePurchases, setAvailablePurchases] = useState([]);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -31,7 +28,6 @@ function Payments() {
     setSuppliers(supList);
     setAccounts(accList.filter(a => a.isActive));
     setPurchases(purList);
-    // 补充名称
     const enriched = payList.map(p => ({ ...p, supplierName: supList.find(s => s.id === p.supplierId)?.name || '未知', accountName: accList.find(a => a.id === p.accountId)?.name || '未知' }));
     setPayments(enriched);
     setLoading(false);
@@ -40,7 +36,6 @@ function Payments() {
   const handleConfirm = async (id) => {
     const payment = await db.payments.get(id);
     if (!payment || payment.confirmed) return;
-    // 更新采购单的已付金额
     if (payment.purchaseId) {
       const purchase = await db.purchases.get(payment.purchaseId);
       if (purchase) {
@@ -57,7 +52,6 @@ function Payments() {
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
-    // 检查付款金额是否超过采购单剩余金额
     if (values.purchaseId) {
       const purchase = await db.purchases.get(values.purchaseId);
       const remaining = purchase.amount - purchase.paidAmount;
@@ -66,12 +60,7 @@ function Payments() {
         return;
       }
     }
-    await db.payments.add({
-      ...values,
-      paymentDate: values.paymentDate?.toDate() || new Date(),
-      confirmed: false,
-      confirmDate: null
-    });
+    await db.payments.add({ ...values, paymentDate: values.paymentDate?.toDate() || new Date(), confirmed: false, confirmDate: null });
     message.success('付款单已创建，请确认打款');
     setModalVisible(false);
     form.resetFields();
@@ -92,7 +81,7 @@ function Payments() {
     { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'prepayment' ? 'blue' : 'green'}>{v === 'prepayment' ? '预付款' : '后付款'}</Tag> },
     { title: '付款日期', dataIndex: 'paymentDate', render: v => dayjs(v).format('YYYY-MM-DD') },
     { title: '状态', dataIndex: 'confirmed', render: v => v ? <Tag color="success">已打款</Tag> : <Tag color="warning">待确认</Tag> },
-    { title: '操作', fixed: 'right', render: (_, r) => !r.confirmed && <Button type="link" icon={<CheckCircleOutlined />} onClick={() => handleConfirm(r.id)}>确认打款</Button> }
+    { title: '操作', render: (_, r) => !r.confirmed && <Button type="link" icon={<CheckCircleOutlined />} onClick={() => handleConfirm(r.id)}>确认打款</Button> }
   ];
 
   return (
@@ -116,5 +105,4 @@ function Payments() {
     </div>
   );
 }
-
 export default Payments;
