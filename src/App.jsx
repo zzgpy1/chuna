@@ -9,17 +9,23 @@ import Purchases from './pages/Purchases';
 import Payments from './pages/Payments';
 import Accounts from './pages/Accounts';
 import Reports from './pages/Reports';
-import DataManager from './pages/DataManager';   // 新增导入
+import DataManager from './pages/DataManager';
 import MainLayout from './layouts/MainLayout';
 import { isAuthenticated } from './auth';
-import { initSampleData } from './db';
 
 function PrivateRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 }
 
+function App() {
+  const [loading, setLoading] = useState(true);
 
-if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>加载中...</div>;
+  useEffect(() => {
+    // 直接完成加载，不调用任何自动初始化
+    setLoading(false);
+  }, []);
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>加载中...</div>;
 
   return (
     <ConfigProvider locale={zhCN} theme={{ algorithm: theme.defaultAlgorithm }}>
@@ -34,7 +40,7 @@ if (loading) return <div style={{ display: 'flex', justifyContent: 'center', ali
             <Route path="payments" element={<Payments />} />
             <Route path="accounts" element={<Accounts />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="data-manager" element={<DataManager />} />   {/* 新增路由 */}
+            <Route path="data-manager" element={<DataManager />} />
           </Route>
         </Routes>
       </BrowserRouter>
