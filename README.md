@@ -14,16 +14,6 @@
    - Name 填写：`LOGIN_PASSWORD`
    - Secret 填写您想要的密码（例如 `admin123`）
 
-## 📁 上传文件
-
-将以下三个文件/文件夹推送到仓库根目录：
-
-.github/workflows/deploy.yml
-
-main.html
-
-README.md
-
 ## 🚀 自动部署
 
 - 推送后，GitHub Actions 会自动运行加密流程
