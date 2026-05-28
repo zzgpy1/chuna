@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Tag, Select, DatePicker, message, Card, Modal, Form, InputNumber, Input, Radio, Alert } from 'antd';
-import { CheckCircleOutlined, DollarOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DollarOutlined, DeleteOutlined } from '@ant-design/icons';
 import { db } from '../db';
 import dayjs from 'dayjs';
 
@@ -50,6 +50,39 @@ function Payments() {
     loadData();
   };
 
+  const handleDeletePayment = async (id, payment) => {
+    if (payment.confirmed) {
+      message.warning('已确认的付款单不能删除');
+      return;
+    }
+    Modal.confirm({
+      title: '确认删除',
+      content: '删除后将恢复关联入库单的未付金额，确定删除吗？',
+      onOk: async () => {
+        setLoading(true);
+        try {
+          if (payment.purchaseId) {
+            const purchase = await db.purchases.get(payment.purchaseId);
+            if (purchase) {
+              const newPaid = purchase.paidAmount - payment.amount;
+              let status = 'unpaid';
+              if (newPaid > 0) status = 'partial';
+              if (newPaid >= purchase.amount) status = 'paid';
+              await db.purchases.update(payment.purchaseId, { paidAmount: Math.max(0, newPaid), status });
+            }
+          }
+          await db.payments.delete(id);
+          message.success('删除成功');
+          loadData();
+        } catch (error) {
+          message.error('删除失败：' + error.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
+  };
+
   const handleSubmit = async () => {
     const values = await form.validateFields();
     if (values.purchaseId) {
@@ -81,7 +114,21 @@ function Payments() {
     { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'prepayment' ? 'blue' : 'green'}>{v === 'prepayment' ? '预付款' : '后付款'}</Tag> },
     { title: '付款日期', dataIndex: 'paymentDate', render: v => dayjs(v).format('YYYY-MM-DD') },
     { title: '状态', dataIndex: 'confirmed', render: v => v ? <Tag color="success">已打款</Tag> : <Tag color="warning">待确认</Tag> },
-    { title: '操作', render: (_, r) => !r.confirmed && <Button type="link" icon={<CheckCircleOutlined />} onClick={() => handleConfirm(r.id)}>确认打款</Button> }
+    {
+      title: '操作',
+      fixed: 'right',
+      render: (_, r) => (
+        <Space>
+          {!r.confirmed && (
+            <>
+              <Button type="link" icon={<CheckCircleOutlined />} onClick={() => handleConfirm(r.id)}>确认打款</Button>
+              <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDeletePayment(r.id, r)}>删除</Button>
+            </>
+          )}
+          {r.confirmed && <span>已确认</span>}
+        </Space>
+      )
+    }
   ];
 
   return (
@@ -105,4 +152,5 @@ function Payments() {
     </div>
   );
 }
+
 export default Payments;
