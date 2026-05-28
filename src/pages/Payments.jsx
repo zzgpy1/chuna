@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Tag, Select, DatePicker, message, Card, Modal, Form, InputNumber, Input, Radio, Alert } from 'antd';
+import { Table, Button, Space, Tag, Select, DatePicker, message, Card, Modal, Form, InputNumber, Input, Radio, Alert, Grid } from 'antd';
 import { CheckCircleOutlined, DollarOutlined, DeleteOutlined } from '@ant-design/icons';
 import { db } from '../db';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
+const { useBreakpoint } = Grid;
 
 function Payments() {
   const [payments, setPayments] = useState([]);
@@ -16,6 +17,8 @@ function Payments() {
   const [form] = Form.useForm();
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [availablePurchases, setAvailablePurchases] = useState([]);
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
   useEffect(() => { loadData(); }, []);
 
@@ -108,24 +111,26 @@ function Payments() {
   };
 
   const columns = [
-    { title: '供应商', dataIndex: 'supplierName' },
-    { title: '金额', dataIndex: 'amount', render: v => `¥${v.toLocaleString()}` },
-    { title: '付款账户', dataIndex: 'accountName' },
-    { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'prepayment' ? 'blue' : 'green'}>{v === 'prepayment' ? '预付款' : '后付款'}</Tag> },
-    { title: '付款日期', dataIndex: 'paymentDate', render: v => dayjs(v).format('YYYY-MM-DD') },
-    { title: '状态', dataIndex: 'confirmed', render: v => v ? <Tag color="success">已打款</Tag> : <Tag color="warning">待确认</Tag> },
-    {
-      title: '操作',
-      fixed: 'right',
+    { title: '供应商', dataIndex: 'supplierName', ellipsis: true, width: isMobile ? 80 : undefined },
+    { title: '金额', dataIndex: 'amount', render: v => `¥${v.toLocaleString()}`, width: isMobile ? 80 : undefined },
+    { title: '账户', dataIndex: 'accountName', responsive: ['sm'] },
+    { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'prepayment' ? 'blue' : 'green'} size="small">{isMobile ? (v === 'prepayment' ? '预' : '后') : (v === 'prepayment' ? '预付款' : '后付款')}</Tag>, width: isMobile ? 50 : undefined },
+    { title: '日期', dataIndex: 'paymentDate', render: v => isMobile ? dayjs(v).format('MM-DD') : dayjs(v).format('YYYY-MM-DD'), width: isMobile ? 70 : undefined },
+    { title: '状态', dataIndex: 'confirmed', render: v => <Tag color={v ? 'success' : 'warning'} size="small">{v ? (isMobile ? '✓' : '已打款') : (isMobile ? '待' : '待确认')}</Tag>, width: isMobile ? 50 : undefined },
+    { 
+      title: '操作', 
+      width: isMobile ? 100 : 150, 
+      fixed: isMobile ? 'right' : undefined,
       render: (_, r) => (
-        <Space>
+        <Space size={isMobile ? 'small' : 'middle'}>
           {!r.confirmed && (
             <>
-              <Button type="link" icon={<CheckCircleOutlined />} onClick={() => handleConfirm(r.id)}>确认打款</Button>
-              <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDeletePayment(r.id, r)}>删除</Button>
+              <Button type="link" size={isMobile ? 'small' : 'middle'} icon={<CheckCircleOutlined />} onClick={() => handleConfirm(r.id)}>{!isMobile && '确认'}</Button>
+              <Button type="link" size={isMobile ? 'small' : 'middle'} danger icon={<DeleteOutlined />} onClick={() => handleDeletePayment(r.id, r)}>{!isMobile && '删除'}</Button>
             </>
           )}
-          {r.confirmed && <span>已确认</span>}
+          {r.confirmed && isMobile && <span>✓</span>}
+          {r.confirmed && !isMobile && <span>已确认</span>}
         </Space>
       )
     }
@@ -133,24 +138,10 @@ function Payments() {
 
   return (
     <div>
-      <Card title="付款管理" extra={<Button type="primary" icon={<DollarOutlined />} onClick={() => setModalVisible(true)}>新增付款</Button>}>
-        <Table columns={columns} dataSource={payments} rowKey="id" loading={loading} scroll={{ x: 1000 }} />
+      <Card title="付款管理" size={isMobile ? 'small' : 'default'} extra={<Button type="primary" size={isMobile ? 'small' : 'middle'} icon={<DollarOutlined />} onClick={() => setModalVisible(true)}>{isMobile ? '新增' : '新增付款'}</Button>}>
+        <Table columns={columns} dataSource={payments} rowKey="id" loading={loading} scroll={{ x: isMobile ? 600 : 1000 }} size={isMobile ? 'small' : 'middle'} pagination={{ pageSize: isMobile ? 10 : 20, size: isMobile ? 'small' : 'default' }} />
       </Card>
-      <Modal title="新增付款单" open={modalVisible} onCancel={() => setModalVisible(false)} footer={null} width={550}>
+      <Modal title="新增付款单" open={modalVisible} onCancel={() => setModalVisible(false)} footer={null} width={isMobile ? '95%' : 550}>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item name="supplierId" label="供应商" rules={[{ required: true }]}><Select placeholder="选择供应商" onChange={onSupplierChange}>{suppliers.map(s => <Option key={s.id} value={s.id}>{s.name}</Option>)}</Select></Form.Item>
-          <Form.Item name="purchaseId" label="关联入库单" rules={[{ required: true }]}><Select placeholder="选择待付款入库单" disabled={!selectedSupplier}>{availablePurchases.map(p => <Option key={p.id} value={p.id}>单号:{p.invoiceNo} 未付:¥{(p.amount - p.paidAmount).toLocaleString()}</Option>)}</Select></Form.Item>
-          <Form.Item name="amount" label="付款金额" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} min={0.01} step={100} placeholder="金额" prefix="¥" /></Form.Item>
-          <Form.Item name="type" label="付款类型" rules={[{ required: true }]}><Radio.Group><Radio value="prepayment">预付款</Radio><Radio value="postpayment">后付款</Radio></Radio.Group></Form.Item>
-          <Form.Item name="accountId" label="付款账户" rules={[{ required: true }]}><Select placeholder="选择账户">{accounts.map(a => <Option key={a.id} value={a.id}>{a.name}({a.accountNo}) - {a.type === 'public' ? '对公' : '私账'}</Option>)}</Select></Form.Item>
-          <Form.Item name="paymentDate" label="付款日期" rules={[{ required: true }]}><DatePicker style={{ width: '100%' }} /></Form.Item>
-          <Form.Item name="notes" label="备注"><Input.TextArea rows={2} /></Form.Item>
-          <Form.Item><Button type="primary" htmlType="submit" block>创建待确认付款单</Button></Form.Item>
-        </Form>
-        <Alert message="创建后需在列表中点击「确认打款」才生效，同时更新入库单付款状态。" type="info" showIcon />
-      </Modal>
-    </div>
-  );
-}
-
-export default Payments;
+          <Form.Item name="purchaseId" label="关联入库单" rules={[{ required: true }]}><Select placeholder="选择待付款入库单" disabled={!selectedSupplier}>{availablePurchases.map(p => <Option key=
