@@ -10,9 +10,7 @@ function Accounts() {
   const [editing, setEditing] = useState(null);
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    loadAccounts();
-  }, []);
+  useEffect(() => { loadAccounts(); }, []);
 
   const loadAccounts = async () => {
     setLoading(true);
@@ -21,21 +19,12 @@ function Accounts() {
     setLoading(false);
   };
 
-  const handleDelete = async (id) => {
-    await db.accounts.delete(id);
-    message.success('删除成功');
-    loadAccounts();
-  };
-
+  const handleDelete = async (id) => { await db.accounts.delete(id); message.success('删除成功'); loadAccounts(); };
   const handleSubmit = async () => {
     const values = await form.validateFields();
-    if (editing) {
-      await db.accounts.update(editing.id, values);
-      message.success('更新成功');
-    } else {
-      await db.accounts.add(values);
-      message.success('添加成功');
-    }
+    if (editing) await db.accounts.update(editing.id, values);
+    else await db.accounts.add(values);
+    message.success(editing ? '更新成功' : '添加成功');
     setModalVisible(false);
     loadAccounts();
   };
@@ -47,14 +36,7 @@ function Accounts() {
     { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'public' ? 'blue' : 'green'}>{v === 'public' ? '对公账户' : '私用账户'}</Tag> },
     { title: '余额', dataIndex: 'balance', render: v => `¥${v?.toLocaleString() || 0}` },
     { title: '状态', dataIndex: 'isActive', render: v => v ? <Tag color="success">启用</Tag> : <Tag>禁用</Tag> },
-    {
-      title: '操作', render: (_, r) => (
-        <Space>
-          <Button type="link" icon={<EditOutlined />} onClick={() => { setEditing(r); form.setFieldsValue(r); setModalVisible(true); }}>编辑</Button>
-          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(r.id)}><Button type="link" danger icon={<DeleteOutlined />}>删除</Button></Popconfirm>
-        </Space>
-      )
-    }
+    { title: '操作', render: (_, r) => (<Space><Button type="link" icon={<EditOutlined />} onClick={() => { setEditing(r); form.setFieldsValue(r); setModalVisible(true); }}>编辑</Button><Popconfirm title="确定删除？" onConfirm={() => handleDelete(r.id)}><Button type="link" danger icon={<DeleteOutlined />}>删除</Button></Popconfirm></Space>) }
   ];
 
   return (
@@ -76,5 +58,4 @@ function Accounts() {
     </div>
   );
 }
-
 export default Accounts;
