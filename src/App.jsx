@@ -9,6 +9,7 @@ import Purchases from './pages/Purchases';
 import Payments from './pages/Payments';
 import Accounts from './pages/Accounts';
 import Reports from './pages/Reports';
+import DataManager from './pages/DataManager';   // 新增导入
 import MainLayout from './layouts/MainLayout';
 import { isAuthenticated } from './auth';
 import { initSampleData } from './db';
@@ -39,6 +40,7 @@ function App() {
             <Route path="payments" element={<Payments />} />
             <Route path="accounts" element={<Accounts />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="data-manager" element={<DataManager />} />   {/* 新增路由 */}
           </Route>
         </Routes>
       </BrowserRouter>
