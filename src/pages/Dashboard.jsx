@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Table, Typography, Spin, Tag } from 'antd';
+import { Card, Row, Col, Statistic, Table, Typography, Spin, Tag, Grid } from 'antd';
 import { DollarOutlined, ShoppingOutlined, TeamOutlined, BankOutlined } from '@ant-design/icons';
 import { db } from '../db';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
+const { useBreakpoint } = Grid;
 
 function Dashboard() {
   const [loading, setLoading] = useState(true);
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
   const [stats, setStats] = useState({ supplierCount: 0, purchaseTotal: 0, paidTotal: 0, unpaidTotal: 0, accountTotal: 0 });
   const [recentPayments, setRecentPayments] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
@@ -52,28 +55,55 @@ function Dashboard() {
   };
 
   const columns = [
-    { title: '供应商', dataIndex: 'supplierName' },
-    { title: '金额', dataIndex: 'amount', render: v => `¥${v.toLocaleString()}` },
-    { title: '付款日期', dataIndex: 'paymentDate', render: v => dayjs(v).format('YYYY-MM-DD') },
-    { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'prepayment' ? 'blue' : 'green'}>{v === 'prepayment' ? '预付款' : '后付款'}</Tag> }
+    { title: '供应商', dataIndex: 'supplierName', ellipsis: true },
+    { title: '金额', dataIndex: 'amount', render: v => `¥${v.toLocaleString()}`, width: isMobile ? 80 : undefined },
+    { title: '付款日期', dataIndex: 'paymentDate', render: v => dayjs(v).format('MM-DD'), width: isMobile ? 80 : undefined },
+    { title: '类型', dataIndex: 'type', render: v => <Tag color={v === 'prepayment' ? 'blue' : 'green'}>{v === 'prepayment' ? '预付款' : '后付款'}</Tag>, width: isMobile ? 70 : undefined }
   ];
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
   if (loading) return <Spin size="large" />;
   return (
     <div>
-      <Title level={3} style={{ marginBottom: 24 }}>数据仪表盘</Title>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}><Card><Statistic title="供应商数量" value={stats.supplierCount} prefix={<TeamOutlined />} valueStyle={{ color: '#1677ff' }} /></Card></Col>
-        <Col xs={24} sm={12} lg={6}><Card><Statistic title="入库总额" value={stats.purchaseTotal} prefix={<ShoppingOutlined />} suffix="元" valueStyle={{ color: '#52c41a' }} /></Card></Col>
-        <Col xs={24} sm={12} lg={6}><Card><Statistic title="已付总额" value={stats.paidTotal} prefix={<DollarOutlined />} suffix="元" valueStyle={{ color: '#722ed1' }} /></Card></Col>
-        <Col xs={24} sm={12} lg={6}><Card><Statistic title="应付余额" value={stats.unpaidTotal} prefix={<DollarOutlined />} suffix="元" valueStyle={{ color: '#faad14' }} /></Card></Col>
+      <Title level={isMobile ? 4 : 3} style={{ marginBottom: 16 }}>数据仪表盘</Title>
+      <Row gutter={[isMobile ? 8 : 16, isMobile ? 8 : 16]}>
+        <Col xs={12} sm={12} lg={6}><Card size="small"><Statistic title="供应商" value={stats.supplierCount} prefix={<TeamOutlined />} valueStyle={{ fontSize: isMobile ? 20 : undefined, color: '#1677ff' }} /></Card></Col>
+        <Col xs={12} sm={12} lg={6}><Card size="small"><Statistic title="入库总额" value={stats.purchaseTotal} prefix={<ShoppingOutlined />} suffix="元" valueStyle={{ fontSize: isMobile ? 20 : undefined, color: '#52c41a' }} /></Card></Col>
+        <Col xs={12} sm={12} lg={6}><Card size="small"><Statistic title="已付总额" value={stats.paidTotal} prefix={<DollarOutlined />} suffix="元" valueStyle={{ fontSize: isMobile ? 20 : undefined, color: '#722ed1' }} /></Card></Col>
+        <Col xs={12} sm={12} lg={6}><Card size="small"><Statistic title="应付余额" value={stats.unpaidTotal} prefix={<DollarOutlined />} suffix="元" valueStyle={{ fontSize: isMobile ? 20 : undefined, color: '#faad14' }} /></Card></Col>
       </Row>
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        <Col xs={24} lg={14}><Card title="月度趋势 (本年)"><ResponsiveContainer width="100%" height={300}><BarChart data={monthlyData}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" /><YAxis /><Tooltip formatter={(value) => `¥${value.toLocaleString()}`} /><Legend /><Bar dataKey="入库金额" fill="#1677ff" /><Bar dataKey="付款金额" fill="#52c41a" /></BarChart></ResponsiveContainer></Card></Col>
-        <Col xs={24} lg={10}><Card title="应付账款分布"><ResponsiveContainer width="100%" height={300}><PieChart><Pie data={supplierData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">{supplierData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip formatter={(value) => `¥${value.toLocaleString()}`} /></PieChart></ResponsiveContainer></Card></Col>
+      <Row gutter={[isMobile ? 8 : 16, isMobile ? 8 : 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} lg={14}>
+          <Card title="月度趋势 (本年)" size="small">
+            <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
+              <BarChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                <YAxis tick={{ fontSize: isMobile ? 10 : 12 }} />
+                <Tooltip formatter={(value) => `¥${value.toLocaleString()}`} />
+                <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                <Bar dataKey="入库金额" fill="#1677ff" />
+                <Bar dataKey="付款金额" fill="#52c41a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+        <Col xs={24} lg={10}>
+          <Card title="应付账款分布" size="small">
+            <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
+              <PieChart>
+                <Pie data={supplierData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => isMobile ? `${(percent * 100).toFixed(0)}%` : `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={isMobile ? 60 : 80} fill="#8884d8" dataKey="value">
+                  {supplierData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(value) => `¥${value.toLocaleString()}`} />
+              </PieChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
       </Row>
-      <Card title="最近付款记录" style={{ marginTop: 24 }}><Table dataSource={recentPayments} columns={columns} rowKey="id" pagination={false} size="small" /></Card>
+      <Card title="最近付款记录" size="small" style={{ marginTop: 16 }}>
+        <Table dataSource={recentPayments} columns={columns} rowKey="id" pagination={false} size="small" scroll={{ x: isMobile ? 400 : undefined }} />
+      </Card>
     </div>
   );
 }
