@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, message, Typography, Alert, Space } from 'antd';
+import { Form, Input, Button, Card, message, Typography, Alert } from 'antd';
 import { UserOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { login } from '../auth';
 
@@ -44,7 +44,7 @@ function Login() {
             <Button type="primary" htmlType="submit" loading={loading} block>登录系统</Button>
           </Form.Item>
         </Form>
-        <Alert message="默认账号密码在Actions Secrets中配置，请联系管理员" type="info" showIcon style={{ marginTop: 16 }} />
+        <Alert message="默认账号密码在Actions Secrets中配置" type="info" showIcon style={{ marginTop: 16 }} />
       </Card>
     </div>
   );
