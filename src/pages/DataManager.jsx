@@ -132,4 +132,4 @@ function DataManager() {
     </div>
   );
 }
-export default DataManager;export default DataManager;
+export default DataManager;
