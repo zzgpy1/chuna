@@ -8,6 +8,7 @@ import {
   DollarOutlined,
   BankOutlined,
   BarChartOutlined,
+  DatabaseOutlined,   // 新增：数据管理图标
   LogoutOutlined,
   UserOutlined,
   BellOutlined
@@ -30,6 +31,7 @@ function MainLayout() {
     { key: '/payments', icon: <DollarOutlined />, label: '付款管理' },
     { key: '/accounts', icon: <BankOutlined />, label: '账户管理' },
     { key: '/reports', icon: <BarChartOutlined />, label: '报表查询' },
+    { key: '/data-manager', icon: <DatabaseOutlined />, label: '数据管理' },   // 新增菜单项
   ];
 
   const handleMenuClick = ({ key }) => {
