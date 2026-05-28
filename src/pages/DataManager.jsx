@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Space, message, Modal, Alert, Upload } from 'antd';
+import { Card, Button, Space, message, Modal, Alert, Upload, Grid } from 'antd';
 import { DeleteOutlined, ExportOutlined, ImportOutlined, WarningOutlined } from '@ant-design/icons';
 import { db } from '../db';
+
+const { useBreakpoint } = Grid;
 
 function DataManager() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
-  // 导出全部数据
   const exportData = async () => {
     setLoading(true);
     try {
@@ -34,7 +37,6 @@ function DataManager() {
     }
   };
 
-  // 导入数据（覆盖）
   const importData = (file) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -63,7 +65,6 @@ function DataManager() {
     reader.readAsText(file);
   };
 
-  // 清空数据
   const clearAllData = async (keepAccounts = false) => {
     setLoading(true);
     try {
@@ -99,17 +100,17 @@ function DataManager() {
 
   return (
     <div>
-      <Card title="数据管理（备份/恢复/清空）" style={{ maxWidth: 800, margin: '0 auto' }}>
+      <Card title="数据管理" size={isMobile ? 'small' : 'default'} style={{ maxWidth: 800, margin: '0 auto' }}>
         <Alert
           message="注意：导入数据将覆盖当前所有数据，建议先导出备份。清空操作不可恢复！"
           type="warning"
           showIcon
-          style={{ marginBottom: 24 }}
+          style={{ marginBottom: 16 }}
         />
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Space wrap>
-            <Button type="primary" icon={<ExportOutlined />} onClick={exportData} loading={loading}>
-              导出全部数据（JSON）
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Space wrap size={isMobile ? 'small' : 'middle'}>
+            <Button type="primary" icon={<ExportOutlined />} onClick={exportData} loading={loading} size={isMobile ? 'small' : 'middle'}>
+              导出全部数据
             </Button>
             <Upload
               accept=".json"
@@ -119,17 +120,16 @@ function DataManager() {
                 return false;
               }}
             >
-              <Button icon={<ImportOutlined />} loading={loading}>导入数据（恢复备份）</Button>
+              <Button icon={<ImportOutlined />} loading={loading} size={isMobile ? 'small' : 'middle'}>导入数据</Button>
             </Upload>
-            <Button danger icon={<DeleteOutlined />} onClick={confirmClear} loading={loading}>
+            <Button danger icon={<DeleteOutlined />} onClick={confirmClear} loading={loading} size={isMobile ? 'small' : 'middle'}>
               清空数据
             </Button>
           </Space>
-          <Alert message="提示：IndexedDB 数据会长期保存在您的浏览器中，除非手动清除或卸载浏览器。建议定期导出备份。" type="info" showIcon />
+          <Alert message="提示：IndexedDB 数据会长期保存在您的浏览器中，建议定期导出备份。" type="info" showIcon />
         </Space>
       </Card>
     </div>
   );
 }
-
-export default DataManager;
+export default DataManager;export default DataManager;
