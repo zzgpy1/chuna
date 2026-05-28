@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // 新增
+import { useNavigate } from 'react-router-dom';
 import { Card, Button, Space, message, Modal, Alert, Upload } from 'antd';
 import { DeleteOutlined, ExportOutlined, ImportOutlined, WarningOutlined } from '@ant-design/icons';
 import { db } from '../db';
 
 function DataManager() {
-  const navigate = useNavigate();  // 新增
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // 导出数据 (不变)
+  // 导出全部数据
   const exportData = async () => {
     setLoading(true);
     try {
@@ -34,7 +34,7 @@ function DataManager() {
     }
   };
 
-  // 导入数据
+  // 导入数据（覆盖）
   const importData = (file) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -53,7 +53,6 @@ function DataManager() {
         if (data.payments.length) await db.payments.bulkAdd(data.payments);
         if (data.accounts.length) await db.accounts.bulkAdd(data.accounts);
         message.success('数据导入成功，即将跳转至仪表盘');
-        // 跳转到仪表盘，避免刷新导致404
         navigate('/dashboard');
       } catch (error) {
         message.error('导入失败：' + error.message);
@@ -64,7 +63,7 @@ function DataManager() {
     reader.readAsText(file);
   };
 
-  // 清空所有数据
+  // 清空数据
   const clearAllData = async (keepAccounts = false) => {
     setLoading(true);
     try {
@@ -73,7 +72,6 @@ function DataManager() {
       await db.payments.clear();
       if (!keepAccounts) await db.accounts.clear();
       message.success(keepAccounts ? '已清空业务数据，账户信息已保留' : '所有数据已清空');
-      // 跳转到仪表盘，避免刷新404
       navigate('/dashboard');
     } catch (error) {
       message.error('清空失败：' + error.message);
