@@ -25,19 +25,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # 不再使用缓存，避免锁文件缺失问题
+      
+      - name: Inject login credentials from Secrets
+        run: |
+          sed -i "s/__LOGIN_USERNAME__/${{ secrets.LOGIN_USERNAME }}/g" src/auth.js
+          sed -i "s/__LOGIN_PASSWORD__/${{ secrets.LOGIN_PASSWORD }}/g" src/auth.js
       
       - name: Install dependencies
-        run: npm install   # 改为 npm install，不要求锁文件
+        run: npm install
       
-      - name: Build with env
-        run: |
-          echo "VITE_LOGIN_USERNAME=${{ secrets.LOGIN_USERNAME }}" >> .env.production
-          echo "VITE_LOGIN_PASSWORD=${{ secrets.LOGIN_PASSWORD }}" >> .env.production
-          npm run build
-        env:
-          LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
-          LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+      - name: Build
+        run: npm run build
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
