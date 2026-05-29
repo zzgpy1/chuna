@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# 赋予 GITHUB_TOKEN 写入权限
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install   # 修改此处：使用 npm install 替代 npm ci
+        run: npm install
 
       - name: Build project
         run: npm run build
@@ -27,12 +31,18 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
+      # 调试：列出构建产物（可选，便于排查 dist 是否为空）
+      - name: List dist contents
+        run: ls -la dist/ || echo "dist directory not found"
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
+          # 强制推送（首次部署时使用，后续可去掉）
+          force_orphan: true
 
       - name: Sync Admin User & Sample Data
         run: |
