@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # 删除 cache: 'npm' 这一行
       
       - name: Install dependencies
         run: npm install
@@ -35,7 +35,7 @@ jobs:
           sed -i "s/__LOGIN_USERNAME__/${{ secrets.LOGIN_USERNAME }}/g" src/auth.js
           sed -i "s/__LOGIN_PASSWORD__/${{ secrets.LOGIN_PASSWORD }}/g" src/auth.js
       
-      - name: Set up environment variables
+      - name: Set up environment variables (if using Supabase)
         run: |
           echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env.production
           echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env.production
