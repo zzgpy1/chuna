@@ -19,7 +19,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install   # 修改此处：使用 npm install 替代 npm ci
 
       - name: Build project
         run: npm run build
