@@ -16,6 +16,7 @@ export const useAuthStore = defineStore('auth', {
     checkAuth() {
       const stored = localStorage.getItem('auth')
       this.isAuthenticated = stored === 'true'
+      return this.isAuthenticated
     }
   }
 })
