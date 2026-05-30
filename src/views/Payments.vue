@@ -1,11 +1,9 @@
 <template>
   <div class="payments">
-    <!-- 工具栏：新增 + 导出/导入/清除 -->
     <div class="toolbar">
       <el-button type="primary" @click="openCreateDialog">➕ 新增付款单</el-button>
       <el-button type="success" @click="exportToCSV" :disabled="!payments.length">📎 导出CSV</el-button>
       <el-button type="warning" @click="triggerImport">📂 导入CSV</el-button>
-      <el-button type="danger" @click="clearAllData" plain>⚠️ 清除所有数据</el-button>
       <el-select
         v-model="statusFilter"
         placeholder="状态筛选"
@@ -15,7 +13,6 @@
         <el-option label="未付款" value="unpaid" />
         <el-option label="已付款" value="paid" />
       </el-select>
-      <!-- 隐藏的文件上传 input，用于导入 -->
       <input
         type="file"
         ref="fileInput"
@@ -25,7 +22,6 @@
       />
     </div>
 
-    <!-- 付款记录表格 -->
     <el-table
       :data="filteredPayments"
       stripe
@@ -76,7 +72,7 @@
       </el-table-column>
     </el-table>
 
-    <!-- 新增/编辑弹窗（复用） -->
+    <!-- 新增/编辑弹窗 -->
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -150,7 +146,7 @@
       </template>
     </el-dialog>
 
-    <!-- 详情弹窗（不变） -->
+    <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" title="付款单详情" width="500px">
       <el-descriptions :column="1" border>
         <el-descriptions-item label="日期">{{ detail.order_date }}</el-descriptions-item>
@@ -178,7 +174,6 @@ const companyAccounts = ref([])
 const loading = ref(false)
 const statusFilter = ref('')
 
-// 弹窗控制
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增付款单')
 const paymentFormRef = ref()
@@ -198,14 +193,10 @@ const paymentRules = {
   company_account_id: [{ required: true, message: '请选择公司账户' }]
 }
 
-// 详情弹窗
 const detailVisible = ref(false)
 const detail = ref({})
-
-// 文件导入ref
 const fileInput = ref(null)
 
-// ---------- 辅助函数 ----------
 const formatMoney = (val) => `¥${(val || 0).toFixed(2)}`
 const moneyFormatter = (row, col, val) => formatMoney(val)
 
@@ -214,15 +205,11 @@ const filteredPayments = computed(() => {
   return payments.value.filter(p => p.status === statusFilter.value)
 })
 
-// ---------- API 交互 ----------
 async function fetchPayments() {
   loading.value = true
   const { data, error } = await supabase
     .from('payment_orders')
-    .select(`
-      *,
-      suppliers ( name )
-    `)
+    .select(`*, suppliers ( name )`)
     .order('order_date', { ascending: false })
   if (error) {
     ElMessage.error('加载付款记录失败: ' + error.message)
@@ -288,11 +275,10 @@ async function savePayment() {
     payment_type: paymentForm.payment_type,
     company_account_id: paymentForm.company_account_id,
     notes: paymentForm.notes,
-    status: 'unpaid'   // 编辑时保留原有状态，新增时默认未付
+    status: 'unpaid'
   }
   let error
   if (paymentForm.id) {
-    // 编辑：保留原有 status 和 paid_at 不变
     const current = payments.value.find(p => p.id === paymentForm.id)
     dataToSave.status = current?.status || 'unpaid'
     if (current?.status === 'paid') dataToSave.paid_at = current.paid_at
@@ -316,7 +302,6 @@ async function savePayment() {
   }
 }
 
-// 删除记录
 async function deletePayment(id) {
   ElMessageBox.confirm('删除后不可恢复，确认删除该付款记录？', '警告', {
     type: 'warning',
@@ -332,7 +317,6 @@ async function deletePayment(id) {
   }).catch(() => {})
 }
 
-// 确认打款
 function openConfirmDialog(row) {
   ElMessageBox.confirm(
     `确认已向 ${row.supplier_name} 支付 ${formatMoney(row.paid_amount)} 元？`,
@@ -360,18 +344,14 @@ function viewDetail(row) {
   detailVisible.value = true
 }
 
-// ---------- 导入导出功能 ----------
+// 导出CSV
 function exportToCSV() {
-  // 准备 CSV 数据（基于当前过滤后的数据，也可全部导出）
   const dataToExport = filteredPayments.value.length ? filteredPayments.value : payments.value
   if (!dataToExport.length) {
     ElMessage.warning('没有可导出的数据')
     return
   }
-  // 定义 CSV 列头（中文）
-  const headers = [
-    '日期', '供应商', '入库金额', '实付金额', '付款类型', '状态', '付款时间', '备注'
-  ]
+  const headers = ['日期', '供应商', '入库金额', '实付金额', '付款类型', '状态', '付款时间', '备注']
   const rows = dataToExport.map(p => [
     p.order_date,
     p.supplier_name,
@@ -385,7 +365,6 @@ function exportToCSV() {
   const csvContent = [headers, ...rows]
     .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
     .join('\n')
-  // 添加 BOM 以支持中文 Excel
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
   const url = URL.createObjectURL(blob)
@@ -408,29 +387,23 @@ async function handleImport(event) {
   const reader = new FileReader()
   reader.onload = async (e) => {
     const content = e.target.result
-    // 解析 CSV（简单按行和逗号分割，忽略 BOM）
     const lines = content.trim().split(/\r?\n/).filter(l => l.trim())
     if (lines.length < 2) {
       ElMessage.warning('CSV 文件至少包含标题行和一行数据')
       return
     }
-    // 跳过标题行，从第二行开始解析
     const dataRows = lines.slice(1)
     const newRecords = []
     for (const line of dataRows) {
-      const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) // 简单处理引号
+      const parts = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g)
       if (!parts || parts.length < 6) continue
       const clean = parts.map(p => p.replace(/^"|"$/g, '').replace(/""/g, '"'))
-      const [
-        order_date, supplierName, inbound_amount, paid_amount, paymentTypeText, statusText, paid_at, notes
-      ] = clean
-      // 查找供应商 ID（根据名称匹配）
+      const [order_date, supplierName, inbound_amount, paid_amount, paymentTypeText, statusText, paid_at, notes] = clean
       const supplier = suppliers.value.find(s => s.name === supplierName)
       if (!supplier) {
         console.warn(`未找到供应商: ${supplierName}`)
         continue
       }
-      // 查找公司账户（这里先默认使用第一个启用账户，实际可优化）
       const defaultAccount = companyAccounts.value[0]
       if (!defaultAccount) {
         ElMessage.error('请先配置公司账户')
@@ -454,7 +427,6 @@ async function handleImport(event) {
       ElMessage.warning('没有有效的记录可导入')
       return
     }
-    // 批量插入
     const { error } = await supabase.from('payment_orders').insert(newRecords)
     if (error) {
       ElMessage.error('导入失败: ' + error.message)
@@ -462,35 +434,11 @@ async function handleImport(event) {
       ElMessage.success(`成功导入 ${newRecords.length} 条记录`)
       fetchPayments()
     }
-    // 清空 file input
     fileInput.value.value = ''
   }
   reader.readAsText(file, 'UTF-8')
 }
 
-// 清除所有数据（危险操作，需二次确认）
-async function clearAllData() {
-  ElMessageBox.confirm(
-    '⚠️ 此操作将删除所有付款记录，不可恢复！确认清除吗？',
-    '危险操作',
-    {
-      type: 'error',
-      confirmButtonText: '确认清除',
-      cancelButtonText: '取消',
-      confirmButtonClass: 'el-button--danger'
-    }
-  ).then(async () => {
-    const { error } = await supabase.from('payment_orders').delete().neq('id', 0) // 删除所有
-    if (error) {
-      ElMessage.error('清除失败: ' + error.message)
-    } else {
-      ElMessage.success('已清除所有付款记录')
-      fetchPayments()
-    }
-  }).catch(() => {})
-}
-
-// ---------- 生命周期 ----------
 onMounted(() => {
   fetchPayments()
   fetchSuppliersAndAccounts()
