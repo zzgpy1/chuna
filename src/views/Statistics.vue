@@ -24,7 +24,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchStats">查询</el-button>
+          <el-button type="primary" @click="fetchStats">查询统计</el-button>
+          <el-button type="success" @click="exportDetails" :disabled="!details.length">导出明细CSV</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -58,7 +59,8 @@ const dateValue = ref('')
 const queryForm = ref({ supplier_id: null })
 const totalAmount = ref(0)
 const paymentCount = ref(0)
-const details = ref([])
+const details = ref([])   // 分组汇总结果
+let currentDetailRecords = []   // 存储当前查询到的原始付款记录（用于导出）
 
 const dateType = computed(() => {
   if (timeUnit.value === 'day') return 'date'
@@ -76,7 +78,7 @@ const valueFormat = computed(() => {
   return 'YYYY'
 })
 
-const formatMoney = (val) => `¥${val?.toFixed(2) || '0.00'}`
+const formatMoney = (val) => `¥${(val || 0).toFixed(2)}`
 const moneyFormatter = (row, col, val) => formatMoney(val)
 
 async function fetchSuppliers() {
@@ -109,7 +111,13 @@ async function fetchStats() {
     .select(`
       paid_amount,
       supplier_id,
-      suppliers ( name )
+      suppliers ( name ),
+      order_date,
+      inbound_amount,
+      payment_type,
+      status,
+      paid_at,
+      notes
     `)
     .eq('status', 'paid')
     .gte('paid_at', startDate)
@@ -122,30 +130,65 @@ async function fetchStats() {
   const { data, error } = await query
   if (error) {
     ElMessage.error('查询失败: ' + error.message)
-  } else {
-    const total = data.reduce((sum, p) => sum + (p.paid_amount || 0), 0)
-    totalAmount.value = total
-    paymentCount.value = data.length
-    
-    // 按供应商分组
-    const map = new Map()
-    for (const p of data) {
-      const name = p.suppliers?.name || '未知'
-      if (!map.has(name)) {
-        map.set(name, { supplier_name: name, paid_amount: 0, payment_count: 0 })
-      }
-      const item = map.get(name)
-      item.paid_amount += p.paid_amount
-      item.payment_count += 1
-    }
-    details.value = Array.from(map.values())
+    loading.value = false
+    return
   }
+  // 保存原始记录供导出使用
+  currentDetailRecords = data || []
+  
+  const total = currentDetailRecords.reduce((sum, p) => sum + (p.paid_amount || 0), 0)
+  totalAmount.value = total
+  paymentCount.value = currentDetailRecords.length
+  
+  // 按供应商分组汇总
+  const map = new Map()
+  for (const p of currentDetailRecords) {
+    const name = p.suppliers?.name || '未知'
+    if (!map.has(name)) {
+      map.set(name, { supplier_name: name, paid_amount: 0, payment_count: 0 })
+    }
+    const item = map.get(name)
+    item.paid_amount += p.paid_amount
+    item.payment_count += 1
+  }
+  details.value = Array.from(map.values())
   loading.value = false
+}
+
+// 导出当前查询到的原始付款明细（CSV格式）
+function exportDetails() {
+  if (!currentDetailRecords.length) {
+    ElMessage.warning('没有可导出的数据，请先进行查询')
+    return
+  }
+  const headers = ['日期', '供应商', '入库金额', '实付金额', '付款类型', '状态', '付款时间', '备注']
+  const rows = currentDetailRecords.map(p => [
+    p.order_date || '',
+    p.suppliers?.name || '-',
+    p.inbound_amount || 0,
+    p.paid_amount || 0,
+    p.payment_type === 'prepay' ? '预付款' : '后付款',
+    p.status === 'paid' ? '已付款' : '未付款',
+    p.paid_at || '',
+    p.notes || ''
+  ])
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    .join('\n')
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.href = url
+  link.setAttribute('download', `payment_export_${new Date().toISOString().slice(0,19)}.csv`)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+  ElMessage.success('导出成功')
 }
 
 onMounted(() => {
   fetchSuppliers()
-  // 默认本月
   const now = new Date()
   dateValue.value = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}`
   fetchStats()
