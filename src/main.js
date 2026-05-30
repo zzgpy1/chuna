@@ -16,6 +16,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.use(pinia)
 app.use(router)
-app.use(ElementPlus)   // 这行非常重要！注册所有 Element Plus 组件
+app.use(ElementPlus)   // 关键：注册 Element Plus 组件
 
 app.mount('#app')
