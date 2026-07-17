@@ -3,7 +3,7 @@ name: Deploy to Cloudflare Workers
 on:
   push:
     branches:
-      - main  # 或您的主分支名称
+      - main
 
 jobs:
   deploy:
@@ -11,18 +11,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: 使用 Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20   # 关键：升级到 20 或更高
-      - name: 安装 Wrangler
+          node-version: 18
+      - name: Install Wrangler
         run: npm install -g wrangler
-      - name: 部署 Worker
-        run: |
-          wrangler deploy --env production \
-            --var USERNAME:${{ secrets.USERNAME }} \
-            --var PASSWORD:${{ secrets.PASSWORD }} \
-            --var API_TOKEN:${{ secrets.API_TOKEN }}
+      - name: Deploy Worker
+        run: wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
