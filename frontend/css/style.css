@@ -1,0 +1,59 @@
+/* 全局 */
+body {
+    background-color: #f4f7fc;
+}
+.login-container {
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+}
+.login-card {
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.9);
+}
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.card {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+}
+.card-header {
+    background: transparent;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.btn-primary {
+    background: #4f6ef7;
+    border-color: #4f6ef7;
+}
+.btn-primary:hover {
+    background: #3b5de7;
+    border-color: #3b5de7;
+}
+.table th {
+    font-weight: 600;
+    color: #1f2a4a;
+    border-top: none;
+}
+.badge-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+.badge-unconfirmed {
+    background: #f8d7da;
+    color: #721c24;
+}
+/* 移动端适配 */
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .card-body {
+        padding: 1rem;
+    }
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+}
