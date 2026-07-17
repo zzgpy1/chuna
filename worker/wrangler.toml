@@ -1,8 +1,0 @@
-name = "cashier-worker"
-main = "src/index.js"
-compatibility_date = "2024-12-18"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "cashier-db"
-database_id = "9ee6215f-d9c7-46b7-a952-6cf1e5683b6c"   # 在Cloudflare Dash创建D1后替换
