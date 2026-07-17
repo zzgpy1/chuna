@@ -1,3 +1,43 @@
+// 在文件最前面添加
+async function initDB(env) {
+    const createTables = [
+        `CREATE TABLE IF NOT EXISTS suppliers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            products TEXT,
+            remark TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`,
+        `CREATE TABLE IF NOT EXISTS accounts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            type TEXT NOT NULL,
+            account_no TEXT,
+            bank_info TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`,
+        `CREATE TABLE IF NOT EXISTS payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            supplier_id INTEGER NOT NULL,
+            account_id INTEGER,
+            payment_type TEXT NOT NULL,
+            amount REAL NOT NULL,
+            stock_amount REAL,
+            is_confirmed INTEGER DEFAULT 0,
+            payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            remark TEXT,
+            FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+            FOREIGN KEY (account_id) REFERENCES accounts(id)
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_payments_supplier ON payments(supplier_id)`,
+        `CREATE INDEX IF NOT EXISTS idx_payments_date ON payments(payment_date)`,
+        `CREATE INDEX IF NOT EXISTS idx_payments_confirmed ON payments(is_confirmed)`
+    ];
+    for (const sql of createTables) {
+        await env.DB.prepare(sql).run();
+    }
+}
+
 // worker/src/index.js
 import { Router } from 'itty-router';
 
