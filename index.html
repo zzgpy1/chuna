@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
     <title>出纳管理系统</title>
-    <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         /* ===== 全局重置 & 基础 ===== */
@@ -14,7 +13,6 @@
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-
         :root {
             --primary: #4F46E5;
             --primary-dark: #4338CA;
@@ -44,7 +42,6 @@
             --radius-sm: 8px;
             --transition: all 0.2s ease;
         }
-
         body {
             background: var(--gray-100);
             color: var(--gray-800);
@@ -54,7 +51,6 @@
             justify-content: center;
             padding: 16px;
         }
-
         /* ===== 登录页面 ===== */
         .login-container {
             width: 100%;
@@ -65,23 +61,11 @@
             padding: 40px 32px;
             animation: fadeUp 0.5s ease;
         }
-
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
+        .login-header { text-align: center; margin-bottom: 32px; }
         .login-header .logo-icon {
             width: 56px;
             height: 56px;
@@ -95,36 +79,11 @@
             margin: 0 auto 12px;
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
-
-        .login-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--gray-900);
-            letter-spacing: -0.5px;
-        }
-
-        .login-header p {
-            color: var(--gray-500);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--gray-700);
-            margin-bottom: 6px;
-        }
-
-        .form-group .input-wrapper {
-            position: relative;
-        }
-
+        .login-header h1 { font-size: 24px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.5px; }
+        .login-header p { color: var(--gray-500); font-size: 14px; margin-top: 4px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; }
+        .form-group .input-wrapper { position: relative; }
         .form-group .input-wrapper i {
             position: absolute;
             left: 14px;
@@ -133,7 +92,6 @@
             color: var(--gray-400);
             font-size: 16px;
         }
-
         .form-group input {
             width: 100%;
             padding: 12px 14px 12px 44px;
@@ -144,13 +102,11 @@
             background: var(--gray-50);
             outline: none;
         }
-
         .form-group input:focus {
             border-color: var(--primary);
             background: #fff;
             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
-
         .btn {
             display: inline-flex;
             align-items: center;
@@ -165,62 +121,19 @@
             transition: var(--transition);
             text-decoration: none;
         }
-
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #059669;
-        }
-        .btn-warning {
-            background: var(--warning);
-            color: #fff;
-        }
-        .btn-warning:hover {
-            background: #D97706;
-        }
-        .btn-danger {
-            background: var(--danger);
-            color: #fff;
-        }
-        .btn-danger:hover {
-            background: #DC2626;
-        }
-        .btn-outline {
-            background: transparent;
-            color: var(--gray-600);
-            border: 1.5px solid var(--gray-300);
-        }
-        .btn-outline:hover {
-            background: var(--gray-100);
-            border-color: var(--gray-400);
-        }
-        .btn-sm {
-            padding: 6px 14px;
-            font-size: 13px;
-        }
-        .btn-xs {
-            padding: 4px 10px;
-            font-size: 12px;
-        }
-
+        .btn-primary { background: var(--primary); color: #fff; width: 100%; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #059669; }
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-warning:hover { background: #D97706; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #DC2626; }
+        .btn-outline { background: transparent; color: var(--gray-600); border: 1.5px solid var(--gray-300); }
+        .btn-outline:hover { background: var(--gray-100); border-color: var(--gray-400); }
+        .btn-sm { padding: 6px 14px; font-size: 13px; }
+        .btn-xs { padding: 4px 10px; font-size: 12px; }
         .login-error {
             background: var(--danger-bg);
             color: var(--danger);
@@ -230,11 +143,7 @@
             display: none;
             margin-bottom: 16px;
         }
-
-        .login-error.show {
-            display: block;
-        }
-
+        .login-error.show { display: block; }
         /* ===== 主应用布局 ===== */
         .app-container {
             width: 100%;
@@ -247,12 +156,7 @@
             min-height: 90vh;
             animation: fadeUp 0.4s ease;
         }
-
-        .app-container.active {
-            display: flex;
-            flex-direction: column;
-        }
-
+        .app-container.active { display: flex; flex-direction: column; }
         /* ===== 顶部导航 ===== */
         .app-header {
             background: #fff;
@@ -264,27 +168,9 @@
             flex-wrap: wrap;
             gap: 12px;
         }
-
-        .app-header .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--gray-900);
-        }
-
-        .app-header .brand i {
-            color: var(--primary);
-            font-size: 22px;
-        }
-
-        .app-header .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .app-header .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--gray-900); }
+        .app-header .brand i { color: var(--primary); font-size: 22px; }
+        .app-header .header-actions { display: flex; align-items: center; gap: 12px; }
         .app-header .header-actions .user-badge {
             display: flex;
             align-items: center;
@@ -296,11 +182,7 @@
             color: var(--primary);
             font-weight: 500;
         }
-
-        .app-header .header-actions .user-badge i {
-            font-size: 16px;
-        }
-
+        .app-header .header-actions .user-badge i { font-size: 16px; }
         .btn-logout {
             background: transparent;
             border: none;
@@ -316,12 +198,7 @@
             align-items: center;
             justify-content: center;
         }
-
-        .btn-logout:hover {
-            background: var(--gray-100);
-            color: var(--danger);
-        }
-
+        .btn-logout:hover { background: var(--gray-100); color: var(--danger); }
         /* ===== 统计卡片 ===== */
         .stats-grid {
             display: grid;
@@ -329,7 +206,6 @@
             gap: 12px;
             padding: 16px 24px 0 24px;
         }
-
         .stat-card {
             background: var(--gray-50);
             border-radius: var(--radius-sm);
@@ -337,34 +213,10 @@
             border: 1px solid var(--gray-200);
             transition: var(--transition);
         }
-
-        .stat-card:hover {
-            border-color: var(--primary-light);
-            background: #fff;
-        }
-
-        .stat-card .stat-label {
-            font-size: 13px;
-            color: var(--gray-500);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .stat-card .stat-value {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-top: 4px;
-        }
-
-        .stat-card .stat-value .currency {
-            font-size: 16px;
-            font-weight: 400;
-            color: var(--gray-500);
-        }
-
+        .stat-card:hover { border-color: var(--primary-light); background: #fff; }
+        .stat-card .stat-label { font-size: 13px; color: var(--gray-500); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .stat-card .stat-value { font-size: 26px; font-weight: 700; color: var(--gray-900); margin-top: 4px; }
+        .stat-card .stat-value .currency { font-size: 16px; font-weight: 400; color: var(--gray-500); }
         /* ===== Tab 导航 ===== */
         .tab-nav {
             display: flex;
@@ -374,7 +226,6 @@
             border-bottom: 1px solid var(--gray-200);
             background: var(--gray-50);
         }
-
         .tab-nav .tab-btn {
             padding: 10px 20px;
             border: none;
@@ -390,38 +241,13 @@
             align-items: center;
             gap: 8px;
         }
-
-        .tab-nav .tab-btn:hover {
-            color: var(--gray-700);
-            background: rgba(0, 0, 0, 0.02);
-        }
-
-        .tab-nav .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: #fff;
-        }
-
-        .tab-nav .tab-btn i {
-            font-size: 15px;
-        }
-
+        .tab-nav .tab-btn:hover { color: var(--gray-700); background: rgba(0,0,0,0.02); }
+        .tab-nav .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #fff; }
+        .tab-nav .tab-btn i { font-size: 15px; }
         /* ===== Tab 内容 ===== */
-        .tab-content {
-            padding: 20px 24px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .tab-pane {
-            display: none;
-            animation: fadeUp 0.3s ease;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
+        .tab-content { padding: 20px 24px; flex: 1; overflow-y: auto; }
+        .tab-pane { display: none; animation: fadeUp 0.3s ease; }
+        .tab-pane.active { display: block; }
         /* ===== 工具栏 ===== */
         .toolbar {
             display: flex;
@@ -431,23 +257,9 @@
             gap: 12px;
             margin-bottom: 16px;
         }
-
-        .toolbar .left {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .toolbar .right {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .toolbar input,
-        .toolbar select {
+        .toolbar .left { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .toolbar .right { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .toolbar input, .toolbar select {
             padding: 8px 12px;
             border: 1.5px solid var(--gray-200);
             border-radius: var(--radius-sm);
@@ -456,13 +268,7 @@
             outline: none;
             transition: var(--transition);
         }
-
-        .toolbar input:focus,
-        .toolbar select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
+        .toolbar input:focus, .toolbar select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
         .toolbar .search-box {
             display: flex;
             align-items: center;
@@ -473,43 +279,13 @@
             padding: 0 12px;
             transition: var(--transition);
         }
-
-        .toolbar .search-box:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .toolbar .search-box i {
-            color: var(--gray-400);
-        }
-
-        .toolbar .search-box input {
-            border: none;
-            padding: 8px 0;
-            font-size: 14px;
-            background: transparent;
-            width: 160px;
-        }
-
-        .toolbar .search-box input:focus {
-            box-shadow: none;
-        }
-
+        .toolbar .search-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .toolbar .search-box i { color: var(--gray-400); }
+        .toolbar .search-box input { border: none; padding: 8px 0; font-size: 14px; background: transparent; width: 160px; }
+        .toolbar .search-box input:focus { box-shadow: none; }
         /* ===== 表格 ===== */
-        .table-wrap {
-            overflow-x: auto;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--gray-200);
-            background: #fff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            min-width: 600px;
-        }
-
+        .table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); background: #fff; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
         table th {
             background: var(--gray-50);
             text-align: left;
@@ -519,18 +295,9 @@
             border-bottom: 1px solid var(--gray-200);
             white-space: nowrap;
         }
-
-        table td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--gray-100);
-            vertical-align: middle;
-        }
-
-        table tr:hover td {
-            background: var(--gray-50);
-        }
-
-        table .status-badge {
+        table td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+        table tr:hover td { background: var(--gray-50); }
+        .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -539,48 +306,18 @@
             font-size: 12px;
             font-weight: 500;
         }
-
-        .status-badge.paid {
-            background: var(--success-bg);
-            color: #065F46;
-        }
-
-        .status-badge.pending {
-            background: var(--warning-bg);
-            color: #92400E;
-        }
-
-        .status-badge .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .status-badge.paid .dot {
-            background: var(--success);
-        }
-        .status-badge.pending .dot {
-            background: var(--warning);
-        }
-
-        .actions-cell {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-
-        .actions-cell .btn {
-            padding: 4px 10px;
-            font-size: 12px;
-            border-radius: 6px;
-        }
-
+        .status-badge.paid { background: var(--success-bg); color: #065F46; }
+        .status-badge.pending { background: var(--warning-bg); color: #92400E; }
+        .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .status-badge.paid .dot { background: var(--success); }
+        .status-badge.pending .dot { background: var(--warning); }
+        .actions-cell { display: flex; flex-wrap: wrap; gap: 4px; }
+        .actions-cell .btn { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
         /* ===== 模态框 ===== */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0,0,0,0.4);
             backdrop-filter: blur(4px);
             display: none;
             align-items: center;
@@ -589,20 +326,8 @@
             z-index: 999;
             animation: fadeIn 0.25s ease;
         }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .modal-box {
             background: #fff;
             border-radius: var(--radius);
@@ -614,31 +339,9 @@
             padding: 28px 32px;
             animation: slideUp 0.3s ease;
         }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal-box .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .modal-box .modal-header h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-900);
-        }
-
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-box .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .modal-box .modal-header h3 { font-size: 20px; font-weight: 700; color: var(--gray-900); }
         .modal-box .modal-header .close-btn {
             background: none;
             border: none;
@@ -649,37 +352,12 @@
             padding: 4px;
             line-height: 1;
         }
-
-        .modal-box .modal-header .close-btn:hover {
-            color: var(--gray-600);
-            transform: rotate(90deg);
-        }
-
-        .modal-box .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .modal-box .form-row .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .modal-box .form-group {
-            margin-bottom: 14px;
-        }
-
-        .modal-box .form-group label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--gray-700);
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .modal-box .form-group input,
-        .modal-box .form-group select,
-        .modal-box .form-group textarea {
+        .modal-box .modal-header .close-btn:hover { color: var(--gray-600); transform: rotate(90deg); }
+        .modal-box .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .modal-box .form-row .full-width { grid-column: 1 / -1; }
+        .modal-box .form-group { margin-bottom: 14px; }
+        .modal-box .form-group label { font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 4px; display: block; }
+        .modal-box .form-group input, .modal-box .form-group select, .modal-box .form-group textarea {
             width: 100%;
             padding: 10px 12px;
             border: 1.5px solid var(--gray-200);
@@ -689,19 +367,11 @@
             outline: none;
             transition: var(--transition);
         }
-
-        .modal-box .form-group input:focus,
-        .modal-box .form-group select:focus,
-        .modal-box .form-group textarea:focus {
+        .modal-box .form-group input:focus, .modal-box .form-group select:focus, .modal-box .form-group textarea:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
         }
-
-        .modal-box .form-group textarea {
-            resize: vertical;
-            min-height: 56px;
-        }
-
+        .modal-box .form-group textarea { resize: vertical; min-height: 56px; }
         .modal-box .form-actions {
             display: flex;
             gap: 10px;
@@ -710,29 +380,11 @@
             padding-top: 16px;
             border-top: 1px solid var(--gray-200);
         }
-
-        .modal-box .form-actions .btn {
-            min-width: 80px;
-        }
-
-        /* ===== 空状态 ===== */
-        .empty-state {
-            text-align: center;
-            padding: 48px 20px;
-            color: var(--gray-400);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-        }
-
-        /* ===== 统计查询 ===== */
+        .modal-box .form-actions .btn { min-width: 80px; }
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--gray-400); }
+        .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state p { font-size: 16px; }
+        /* ===== 查询 ===== */
         .query-filters {
             display: flex;
             flex-wrap: wrap;
@@ -744,202 +396,53 @@
             border-radius: var(--radius-sm);
             border: 1px solid var(--gray-200);
         }
-
-        .query-filters .form-group {
-            margin-bottom: 0;
-            flex: 1 1 150px;
-            min-width: 120px;
-        }
-
-        .query-filters .form-group label {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--gray-500);
-            margin-bottom: 2px;
-        }
-
-        .query-filters .form-group input,
-        .query-filters .form-group select {
-            padding: 8px 10px;
-            font-size: 13px;
-        }
-
-        .query-result {
-            margin-top: 12px;
-        }
-
+        .query-filters .form-group { margin-bottom: 0; flex: 1 1 150px; min-width: 120px; }
+        .query-filters .form-group label { font-size: 12px; font-weight: 500; color: var(--gray-500); margin-bottom: 2px; }
+        .query-filters .form-group input, .query-filters .form-group select { padding: 8px 10px; font-size: 13px; }
+        .query-result { margin-top: 12px; }
         /* ===== 响应式 ===== */
         @media (max-width: 768px) {
-            body {
-                padding: 8px;
-            }
-
-            .login-container {
-                padding: 28px 20px;
-            }
-
-            .app-header {
-                padding: 10px 16px;
-            }
-            .app-header .brand {
-                font-size: 16px;
-            }
-            .app-header .brand span {
-                display: none;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 12px 16px 0 16px;
-                gap: 8px;
-            }
-            .stat-card .stat-value {
-                font-size: 20px;
-            }
-
-            .tab-nav {
-                padding: 8px 12px 0 12px;
-                gap: 2px;
-                overflow-x: auto;
-                flex-wrap: nowrap;
-            }
-            .tab-nav .tab-btn {
-                padding: 8px 14px;
-                font-size: 13px;
-                white-space: nowrap;
-            }
-            .tab-nav .tab-btn span {
-                display: none;
-            }
-            .tab-nav .tab-btn i {
-                font-size: 16px;
-            }
-
-            .tab-content {
-                padding: 12px 12px;
-            }
-
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .toolbar .left,
-            .toolbar .right {
-                flex-wrap: wrap;
-            }
-            .toolbar .search-box input {
-                width: 120px;
-            }
-
-            .modal-box {
-                padding: 20px 16px;
-                margin: 8px;
-            }
-            .modal-box .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 13px;
-                min-width: 480px;
-            }
-            table th,
-            table td {
-                padding: 8px 10px;
-            }
-
-            .query-filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .query-filters .form-group {
-                flex: 1 1 auto;
-                min-width: auto;
-            }
-
-            .actions-cell .btn {
-                padding: 3px 8px;
-                font-size: 11px;
-            }
+            body { padding: 8px; }
+            .login-container { padding: 28px 20px; }
+            .app-header { padding: 10px 16px; }
+            .app-header .brand { font-size: 16px; }
+            .app-header .brand span { display: none; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); padding: 12px 16px 0 16px; gap: 8px; }
+            .stat-card .stat-value { font-size: 20px; }
+            .tab-nav { padding: 8px 12px 0 12px; gap: 2px; overflow-x: auto; flex-wrap: nowrap; }
+            .tab-nav .tab-btn { padding: 8px 14px; font-size: 13px; white-space: nowrap; }
+            .tab-nav .tab-btn span { display: none; }
+            .tab-nav .tab-btn i { font-size: 16px; }
+            .tab-content { padding: 12px 12px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar .left, .toolbar .right { flex-wrap: wrap; }
+            .toolbar .search-box input { width: 120px; }
+            .modal-box { padding: 20px 16px; margin: 8px; }
+            .modal-box .form-row { grid-template-columns: 1fr; }
+            table { font-size: 13px; min-width: 480px; }
+            table th, table td { padding: 8px 10px; }
+            .query-filters { flex-direction: column; align-items: stretch; }
+            .query-filters .form-group { flex: 1 1 auto; min-width: auto; }
+            .actions-cell .btn { padding: 3px 8px; font-size: 11px; }
         }
-
         @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .stat-card {
-                padding: 12px 14px;
-            }
-            .stat-card .stat-value {
-                font-size: 18px;
-            }
-            .stat-card .stat-label {
-                font-size: 11px;
-            }
-
-            .app-header .header-actions .user-badge span {
-                display: none;
-            }
-
-            .modal-box .form-actions {
-                flex-direction: column;
-            }
-            .modal-box .form-actions .btn {
-                width: 100%;
-            }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .stat-card { padding: 12px 14px; }
+            .stat-card .stat-value { font-size: 18px; }
+            .stat-card .stat-label { font-size: 11px; }
+            .app-header .header-actions .user-badge span { display: none; }
+            .modal-box .form-actions { flex-direction: column; }
+            .modal-box .form-actions .btn { width: 100%; }
         }
-
-        /* ===== 滚动条美化 ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--gray-100);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gray-300);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-400);
-        }
-
-        /* 通用工具类 */
-        .text-muted {
-            color: var(--gray-500);
-        }
-        .text-sm {
-            font-size: 13px;
-        }
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .mb-8 {
-            margin-bottom: 8px;
-        }
-        .gap-4 {
-            gap: 4px;
-        }
-        .flex {
-            display: flex;
-        }
-        .flex-center {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .fw-600 {
-            font-weight: 600;
-        }
-        .truncate {
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--gray-100); }
+        ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+        .text-muted { color: var(--gray-500); }
+        .text-sm { font-size: 13px; }
+        .fw-600 { font-weight: 600; }
+        .flex { display: flex; }
+        .flex-center { display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
@@ -973,45 +476,21 @@
 
     <!-- ===== 主应用 ===== -->
     <div id="appContainer" class="app-container">
-
-        <!-- 顶部栏 -->
         <header class="app-header">
-            <div class="brand">
-                <i class="fas fa-coins"></i>
-                <span>出纳管理系统</span>
-            </div>
+            <div class="brand"><i class="fas fa-coins"></i><span>出纳管理系统</span></div>
             <div class="header-actions">
-                <div class="user-badge">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="currentUser">管理员</span>
-                </div>
-                <button class="btn-logout" id="logoutBtn" title="退出登录">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <div class="user-badge"><i class="fas fa-user-circle"></i><span id="currentUser">管理员</span></div>
+                <button class="btn-logout" id="logoutBtn" title="退出登录"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </header>
 
-        <!-- 统计卡片 -->
         <div class="stats-grid" id="statsGrid">
-            <div class="stat-card">
-                <div class="stat-label"><i class="fas fa-users" style="color:var(--primary)"></i> 供应商</div>
-                <div class="stat-value" id="statSuppliers">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label"><i class="fas fa-university" style="color:#7C3AED"></i> 账户</div>
-                <div class="stat-value" id="statAccounts">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label"><i class="fas fa-file-invoice" style="color:var(--warning)"></i> 待打款</div>
-                <div class="stat-value" id="statPending">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label"><i class="fas fa-check-circle" style="color:var(--success)"></i> 已打款</div>
-                <div class="stat-value" id="statPaid">0</div>
-            </div>
+            <div class="stat-card"><div class="stat-label"><i class="fas fa-users" style="color:var(--primary)"></i> 供应商</div><div class="stat-value" id="statSuppliers">0</div></div>
+            <div class="stat-card"><div class="stat-label"><i class="fas fa-university" style="color:#7C3AED"></i> 账户</div><div class="stat-value" id="statAccounts">0</div></div>
+            <div class="stat-card"><div class="stat-label"><i class="fas fa-file-invoice" style="color:var(--warning)"></i> 待打款</div><div class="stat-value" id="statPending">0</div></div>
+            <div class="stat-card"><div class="stat-label"><i class="fas fa-check-circle" style="color:var(--success)"></i> 已打款</div><div class="stat-value" id="statPaid">0</div></div>
         </div>
 
-        <!-- Tab 导航 -->
         <nav class="tab-nav" id="tabNav">
             <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> <span>概览</span></button>
             <button class="tab-btn" data-tab="suppliers"><i class="fas fa-truck"></i> <span>供应商</span></button>
@@ -1020,10 +499,8 @@
             <button class="tab-btn" data-tab="query"><i class="fas fa-search-dollar"></i> <span>查询</span></button>
         </nav>
 
-        <!-- Tab 内容 -->
         <div class="tab-content">
-
-            <!-- ===== 概览 ===== -->
+            <!-- 概览 -->
             <div class="tab-pane active" id="tab-dashboard">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
                     <div style="background:var(--primary-bg);border-radius:var(--radius-sm);padding:16px;border:1px solid #C7D2FE;">
@@ -1040,98 +517,55 @@
                     <div id="dashRecentTransactions" style="font-size:14px;color:var(--gray-500);">暂无交易记录</div>
                 </div>
             </div>
-
-            <!-- ===== 供应商 ===== -->
+            <!-- 供应商 -->
             <div class="tab-pane" id="tab-suppliers">
                 <div class="toolbar">
-                    <div class="left">
-                        <button class="btn btn-primary btn-sm" onclick="openModal('supplierModal', null)"><i class="fas fa-plus"></i> 新增</button>
-                    </div>
+                    <div class="left"><button class="btn btn-primary btn-sm" onclick="openModal('supplierModal', null)"><i class="fas fa-plus"></i> 新增</button></div>
                     <div class="right">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="supplierSearch" placeholder="搜索供应商..." oninput="renderSuppliers()" />
-                        </div>
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="supplierSearch" placeholder="搜索供应商..." oninput="renderSuppliers()" /></div>
                     </div>
                 </div>
                 <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>名称</th><th>供应产品</th><th>联系人</th><th>电话</th><th style="width:140px;">操作</th></tr></thead>
-                        <tbody id="supplierTableBody"></tbody>
-                    </table>
+                    <table><thead><tr><th>名称</th><th>供应产品</th><th>联系人</th><th>电话</th><th style="width:140px;">操作</th></tr></thead><tbody id="supplierTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- ===== 账户 ===== -->
+            <!-- 账户 -->
             <div class="tab-pane" id="tab-accounts">
                 <div class="toolbar">
-                    <div class="left">
-                        <button class="btn btn-primary btn-sm" onclick="openModal('accountModal', null)"><i class="fas fa-plus"></i> 新增</button>
-                    </div>
+                    <div class="left"><button class="btn btn-primary btn-sm" onclick="openModal('accountModal', null)"><i class="fas fa-plus"></i> 新增</button></div>
                     <div class="right">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="accountSearch" placeholder="搜索账户..." oninput="renderAccounts()" />
-                        </div>
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="accountSearch" placeholder="搜索账户..." oninput="renderAccounts()" /></div>
                     </div>
                 </div>
                 <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>名称</th><th>类型</th><th>账号</th><th>开户行</th><th style="width:140px;">操作</th></tr></thead>
-                        <tbody id="accountTableBody"></tbody>
-                    </table>
+                    <table><thead><tr><th>名称</th><th>类型</th><th>账号</th><th>开户行</th><th style="width:140px;">操作</th></tr></thead><tbody id="accountTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- ===== 交易 ===== -->
+            <!-- 交易 -->
             <div class="tab-pane" id="tab-transactions">
                 <div class="toolbar">
-                    <div class="left">
-                        <button class="btn btn-primary btn-sm" onclick="openModal('transactionModal', null)"><i class="fas fa-plus"></i> 新增</button>
-                    </div>
+                    <div class="left"><button class="btn btn-primary btn-sm" onclick="openModal('transactionModal', null)"><i class="fas fa-plus"></i> 新增</button></div>
                     <div class="right">
                         <select id="transFilterSupplier" onchange="renderTransactions()"><option value="">全部供应商</option></select>
                         <select id="transFilterStatus" onchange="renderTransactions()"><option value="">全部状态</option><option value="pending">待打款</option><option value="paid">已打款</option></select>
                     </div>
                 </div>
                 <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>供应商</th><th>账户</th><th>类型</th><th>入库金额</th><th>实付金额</th><th>状态</th><th>日期</th><th style="width:160px;">操作</th></tr></thead>
-                        <tbody id="transactionTableBody"></tbody>
-                    </table>
+                    <table><thead><tr><th>供应商</th><th>账户</th><th>类型</th><th>入库金额</th><th>实付金额</th><th>状态</th><th>日期</th><th style="width:160px;">操作</th></tr></thead><tbody id="transactionTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- ===== 查询统计 ===== -->
+            <!-- 查询 -->
             <div class="tab-pane" id="tab-query">
                 <div class="query-filters">
-                    <div class="form-group">
-                        <label>供应商</label>
-                        <select id="querySupplier"><option value="">全部</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>时间维度</label>
-                        <select id="queryDimension" onchange="toggleQueryDate()">
-                            <option value="day">日</option>
-                            <option value="month">月</option>
-                            <option value="year">年</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>日期</label>
-                        <input type="date" id="queryDate" />
-                    </div>
-                    <div class="form-group" style="flex:0 0 auto;">
-                        <button class="btn btn-primary btn-sm" onclick="executeQuery()"><i class="fas fa-search"></i> 查询</button>
-                    </div>
+                    <div class="form-group"><label>供应商</label><select id="querySupplier"><option value="">全部</option></select></div>
+                    <div class="form-group"><label>时间维度</label><select id="queryDimension" onchange="toggleQueryDate()"><option value="day">日</option><option value="month">月</option><option value="year">年</option></select></div>
+                    <div class="form-group"><label>日期</label><input type="date" id="queryDate" /></div>
+                    <div class="form-group" style="flex:0 0 auto;"><button class="btn btn-primary btn-sm" onclick="executeQuery()"><i class="fas fa-search"></i> 查询</button></div>
                 </div>
-                <div id="queryResult" class="query-result">
-                    <div class="empty-state"><i class="fas fa-search-dollar"></i><p>请选择条件后点击查询</p></div>
-                </div>
+                <div id="queryResult" class="query-result"><div class="empty-state"><i class="fas fa-search-dollar"></i><p>请选择条件后点击查询</p></div></div>
             </div>
-
-        </div><!-- /tab-content -->
-    </div><!-- /app-container -->
+        </div>
+    </div>
 
     <!-- ===== 模态框：供应商 ===== -->
     <div class="modal-overlay" id="supplierModal">
@@ -1145,10 +579,7 @@
                     <div class="form-group"><label>联系人</label><input type="text" id="supplierFormContact" /></div>
                     <div class="form-group"><label>电话</label><input type="text" id="supplierFormPhone" /></div>
                 </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" onclick="closeModal('supplierModal')">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('supplierModal')">取消</button><button type="submit" class="btn btn-primary">保存</button></div>
             </form>
         </div>
     </div>
@@ -1161,17 +592,12 @@
                 <input type="hidden" id="accountFormId" />
                 <div class="form-group"><label>账户名称 *</label><input type="text" id="accountFormName" required /></div>
                 <div class="form-row">
-                    <div class="form-group"><label>类型</label>
-                        <select id="accountFormType"><option value="public">对公账户</option><option value="private">私用账户</option></select>
-                    </div>
+                    <div class="form-group"><label>类型</label><select id="accountFormType"><option value="public">对公账户</option><option value="private">私用账户</option></select></div>
                     <div class="form-group"><label>账号</label><input type="text" id="accountFormNumber" /></div>
                 </div>
                 <div class="form-group"><label>开户行</label><input type="text" id="accountFormBank" /></div>
                 <div class="form-group"><label>备注</label><input type="text" id="accountFormNote" /></div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" onclick="closeModal('accountModal')">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('accountModal')">取消</button><button type="submit" class="btn btn-primary">保存</button></div>
             </form>
         </div>
     </div>
@@ -1183,30 +609,19 @@
             <form id="transactionForm">
                 <input type="hidden" id="transactionFormId" />
                 <div class="form-row">
-                    <div class="form-group"><label>供应商 *</label>
-                        <select id="transactionFormSupplier" required></select>
-                    </div>
-                    <div class="form-group"><label>账户</label>
-                        <select id="transactionFormAccount"></select>
-                    </div>
+                    <div class="form-group"><label>供应商 *</label><select id="transactionFormSupplier" required></select></div>
+                    <div class="form-group"><label>账户</label><select id="transactionFormAccount"></select></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>类型</label>
-                        <select id="transactionFormType"><option value="prepay">预付款</option><option value="postpay">后付款</option></select>
-                    </div>
-                    <div class="form-group"><label>交易日期</label>
-                        <input type="date" id="transactionFormDate" />
-                    </div>
+                    <div class="form-group"><label>类型</label><select id="transactionFormType"><option value="prepay">预付款</option><option value="postpay">后付款</option></select></div>
+                    <div class="form-group"><label>交易日期</label><input type="date" id="transactionFormDate" /></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>入库金额 (¥)</label><input type="number" step="0.01" id="transactionFormAmount" placeholder="0.00" /></div>
                     <div class="form-group"><label>实付金额 (¥)</label><input type="number" step="0.01" id="transactionFormPaid" placeholder="0.00" /></div>
                 </div>
                 <div class="form-group"><label>备注</label><input type="text" id="transactionFormNote" /></div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" onclick="closeModal('transactionModal')">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
+                <div class="form-actions"><button type="button" class="btn btn-outline" onclick="closeModal('transactionModal')">取消</button><button type="submit" class="btn btn-primary">保存</button></div>
             </form>
         </div>
     </div>
@@ -1225,10 +640,9 @@
 
     <script>
         // ================================================================
-        // 配置 - 部署时修改 API_BASE 为你的 Worker 地址
+        // 配置 - 部署时必须修改为您的 Worker 域名
         // ================================================================
-        const API_BASE = 'https://chuna.19860519.de5.net';
-        // 如果使用本地开发，可改为 http://localhost:8787
+        const API_BASE = 'https://chuna.19860519.de5.net';  // ⚠️ 替换为您的真实 Worker 地址
 
         // ================================================================
         // 全局状态
@@ -1254,7 +668,7 @@
         const currentUserSpan = $('currentUser');
 
         // ================================================================
-        // API 工具
+        // API 工具（修正：从 localStorage 读取 Token）
         // ================================================================
         async function apiFetch(endpoint, options = {}) {
             const url = API_BASE + endpoint;
@@ -1262,8 +676,10 @@
                 'Content-Type': 'application/json',
                 ...options.headers,
             };
-            if (authToken) {
-                headers['Authorization'] = 'Bearer ' + authToken;
+            // 从 localStorage 获取最新的 token
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                headers['Authorization'] = 'Bearer ' + token;
             }
             const resp = await fetch(url, { ...options, headers });
             if (resp.status === 401) {
@@ -1278,7 +694,7 @@
         }
 
         // ================================================================
-        // 认证
+        // 认证（修正：登录成功后保存 token）
         // ================================================================
         async function login(username, password) {
             try {
@@ -1286,6 +702,7 @@
                     method: 'POST',
                     body: JSON.stringify({ username, password }),
                 });
+                // 响应中应包含 token
                 authToken = data.token;
                 currentUser = username;
                 localStorage.setItem('authToken', authToken);
@@ -1341,8 +758,6 @@
         });
 
         logoutBtn.addEventListener('click', logout);
-
-        // 回车登录
         loginPass.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginForm.dispatchEvent(new Event('submit')); });
 
         // ================================================================
@@ -1361,7 +776,6 @@
                 renderAll();
             } catch (e) {
                 console.error('加载数据失败', e);
-                // 如果 token 无效，自动退出
                 if (e.message.includes('登录已过期')) logout();
             }
         }
@@ -1422,16 +836,14 @@
         }
 
         // ================================================================
-        // 供应商 CRUD
+        // 供应商 CRUD（略，同之前，但注意 apiFetch 已修正）
         // ================================================================
         function renderSuppliers() {
             const search = ($('supplierSearch').value || '').toLowerCase();
-            const filtered = suppliers.filter(s => s.name.toLowerCase().includes(search) || (s.products || '').toLowerCase()
-            .includes(search));
+            const filtered = suppliers.filter(s => s.name.toLowerCase().includes(search) || (s.products || '').toLowerCase().includes(search));
             const tbody = $('supplierTableBody');
             if (filtered.length === 0) {
-                tbody.innerHTML =
-                    `<tr><td colspan="5"><div class="empty-state" style="padding:24px;"><i class="fas fa-truck"></i><p>暂无供应商</p></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state" style="padding:24px;"><i class="fas fa-truck"></i><p>暂无供应商</p></div></td></tr>`;
                 return;
             }
             tbody.innerHTML = filtered.map(s => `
@@ -1454,8 +866,7 @@
             const isEdit = !!data.id;
             const endpoint = isEdit ? `/suppliers/${data.id}` : '/suppliers';
             const method = isEdit ? 'PUT' : 'POST';
-            const resp = await apiFetch(endpoint, { method, body: JSON.stringify(data) });
-            return resp;
+            return await apiFetch(endpoint, { method, body: JSON.stringify(data) });
         }
 
         async function deleteSupplier(id) {
@@ -1496,16 +907,14 @@
         });
 
         // ================================================================
-        // 账户 CRUD
+        // 账户 CRUD（略）
         // ================================================================
         function renderAccounts() {
             const search = ($('accountSearch').value || '').toLowerCase();
-            const filtered = accounts.filter(a => a.name.toLowerCase().includes(search) || (a.account_number || '').includes(
-            search));
+            const filtered = accounts.filter(a => a.name.toLowerCase().includes(search) || (a.account_number || '').includes(search));
             const tbody = $('accountTableBody');
             if (filtered.length === 0) {
-                tbody.innerHTML =
-                    `<tr><td colspan="5"><div class="empty-state" style="padding:24px;"><i class="fas fa-wallet"></i><p>暂无账户</p></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state" style="padding:24px;"><i class="fas fa-wallet"></i><p>暂无账户</p></div></td></tr>`;
                 return;
             }
             const typeMap = { public: '🏢 对公', private: '👤 私用' };
@@ -1529,8 +938,7 @@
             const isEdit = !!data.id;
             const endpoint = isEdit ? `/accounts/${data.id}` : '/accounts';
             const method = isEdit ? 'PUT' : 'POST';
-            const resp = await apiFetch(endpoint, { method, body: JSON.stringify(data) });
-            return resp;
+            return await apiFetch(endpoint, { method, body: JSON.stringify(data) });
         }
 
         async function deleteAccount(id) {
@@ -1573,7 +981,7 @@
         });
 
         // ================================================================
-        // 交易 CRUD
+        // 交易 CRUD（略）
         // ================================================================
         function renderTransactions() {
             const supFilter = parseInt($('transFilterSupplier').value) || null;
@@ -1581,13 +989,11 @@
             let filtered = [...transactions];
             if (supFilter) filtered = filtered.filter(t => t.supplier_id === supFilter);
             if (statusFilter) filtered = filtered.filter(t => t.status === statusFilter);
-            // 按日期降序
             filtered.sort((a, b) => (b.transaction_date || '').localeCompare(a.transaction_date || ''));
 
             const tbody = $('transactionTableBody');
             if (filtered.length === 0) {
-                tbody.innerHTML =
-                    `<tr><td colspan="8"><div class="empty-state" style="padding:24px;"><i class="fas fa-exchange-alt"></i><p>暂无交易记录</p></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:24px;"><i class="fas fa-exchange-alt"></i><p>暂无交易记录</p></div></td></tr>`;
                 return;
             }
             const typeMap = { prepay: '预付款', postpay: '后付款' };
@@ -1623,8 +1029,7 @@
             const isEdit = !!data.id;
             const endpoint = isEdit ? `/transactions/${data.id}` : '/transactions';
             const method = isEdit ? 'PUT' : 'POST';
-            const resp = await apiFetch(endpoint, { method, body: JSON.stringify(data) });
-            return resp;
+            return await apiFetch(endpoint, { method, body: JSON.stringify(data) });
         }
 
         async function deleteTransaction(id) {
@@ -1666,14 +1071,11 @@
             await loadAllData();
         });
 
-        // 交易表单 - 填充下拉
         function populateTransactionSelects() {
             const supSelect = $('transactionFormSupplier');
             const accSelect = $('transactionFormAccount');
-            supSelect.innerHTML = suppliers.map(s =>
-                `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
-            accSelect.innerHTML = `<option value="">无</option>` +
-                accounts.map(a => `<option value="${a.id}">${escHtml(a.name)}</option>`).join('');
+            supSelect.innerHTML = suppliers.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+            accSelect.innerHTML = `<option value="">无</option>` + accounts.map(a => `<option value="${a.id}">${escHtml(a.name)}</option>`).join('');
         }
 
         $('transactionForm').addEventListener('submit', async (e) => {
@@ -1706,17 +1108,13 @@
         function renderQueryOptions() {
             const sel = $('querySupplier');
             const current = sel.value;
-            sel.innerHTML = `<option value="">全部</option>` +
-                suppliers.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+            sel.innerHTML = `<option value="">全部</option>` + suppliers.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
             if (current) sel.value = current;
-            // 设置默认日期为今天
             const today = new Date().toISOString().slice(0, 10);
             if (!$('queryDate').value) $('queryDate').value = today;
         }
 
-        function toggleQueryDate() {
-            // 无额外操作
-        }
+        function toggleQueryDate() {}
 
         async function executeQuery() {
             const supplierId = parseInt($('querySupplier').value) || null;
@@ -1730,38 +1128,32 @@
                 endDate = date;
             } else if (dimension === 'month') {
                 const parts = date.split('-');
-                const year = parts[0],
-                    month = parts[1];
+                const year = parts[0], month = parts[1];
                 startDate = `${year}-${month}-01`;
                 const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
                 endDate = `${year}-${month}-${String(lastDay).padStart(2,'0')}`;
-            } else { // year
+            } else {
                 const year = date.split('-')[0];
                 startDate = `${year}-01-01`;
                 endDate = `${year}-12-31`;
             }
 
-            // 筛选交易
             let filtered = transactions.filter(t => {
                 if (!t.transaction_date) return false;
                 return t.transaction_date >= startDate && t.transaction_date <= endDate;
             });
             if (supplierId) filtered = filtered.filter(t => t.supplier_id === supplierId);
 
-            const paidTotal = filtered.filter(t => t.status === 'paid').reduce((s, t) => s + (parseFloat(t.paid_amount) || 0),
-            0);
-            const pendingTotal = filtered.filter(t => t.status === 'pending').reduce((s, t) => s + (parseFloat(t.paid_amount) ||
-                0), 0);
+            const paidTotal = filtered.filter(t => t.status === 'paid').reduce((s, t) => s + (parseFloat(t.paid_amount) || 0), 0);
+            const pendingTotal = filtered.filter(t => t.status === 'pending').reduce((s, t) => s + (parseFloat(t.paid_amount) || 0), 0);
             const allTotal = paidTotal + pendingTotal;
 
             const container = $('queryResult');
             if (filtered.length === 0) {
-                container.innerHTML =
-                    `<div class="empty-state"><i class="fas fa-search-dollar"></i><p>该时间段内无交易记录</p></div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-search-dollar"></i><p>该时间段内无交易记录</p></div>`;
                 return;
             }
 
-            // 按供应商汇总
             const groupMap = {};
             filtered.forEach(t => {
                 const key = t.supplier_id;
@@ -1817,7 +1209,6 @@
             if (!el) return;
             el.classList.add('active');
             document.body.style.overflow = 'hidden';
-            // 如果是交易模态框，填充下拉
             if (id === 'transactionModal') {
                 populateTransactionSelects();
                 if (!$('transactionFormDate').value) {
@@ -1834,7 +1225,6 @@
             document.body.style.overflow = '';
         }
 
-        // 点击遮罩关闭
         document.querySelectorAll('.modal-overlay').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (e.target === el) {
@@ -1859,7 +1249,7 @@
         });
 
         // ================================================================
-        // 工具函数
+        // 工具
         // ================================================================
         function escHtml(str) {
             if (!str) return '';
@@ -1871,20 +1261,17 @@
         // ================================================================
         // 初始化
         // ================================================================
-        // 检查登录状态
         if (!checkAuth()) {
             loginPage.style.display = 'block';
             appContainer.classList.remove('active');
         }
 
-        // 自动刷新数据（每60秒）
         setInterval(() => {
             if (authToken) loadAllData();
         }, 60000);
 
         console.log('💼 出纳管理系统已启动');
         console.log('📌 API地址:', API_BASE);
-        console.log('🔑 登录状态:', authToken ? '已登录' : '未登录');
     </script>
 </body>
 </html>
