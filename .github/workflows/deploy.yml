@@ -3,7 +3,7 @@ name: Deploy to Cloudflare Workers
 on:
   push:
     branches:
-      - main
+      - main   # 或您的默认分支
 
 jobs:
   deploy:
@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20   # 修改为 20 或更高版本（如 'lts/*'）
       - name: Install Wrangler
         run: npm install -g wrangler
       - name: Deploy Worker
