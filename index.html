@@ -400,6 +400,27 @@
         .query-filters .form-group label { font-size: 12px; font-weight: 500; color: var(--gray-500); margin-bottom: 2px; }
         .query-filters .form-group input, .query-filters .form-group select { padding: 8px 10px; font-size: 13px; }
         .query-result { margin-top: 12px; }
+        /* ===== 收银汇总卡片 ===== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .summary-item {
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        .summary-item .label { font-size: 12px; color: var(--gray-500); }
+        .summary-item .value { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+        .summary-total {
+            background: var(--primary-bg);
+            border-color: #C7D2FE;
+        }
+        .summary-total .value { color: var(--primary); font-size: 22px; }
         /* ===== 响应式 ===== */
         @media (max-width: 768px) {
             body { padding: 8px; }
@@ -424,6 +445,7 @@
             .query-filters { flex-direction: column; align-items: stretch; }
             .query-filters .form-group { flex: 1 1 auto; min-width: auto; }
             .actions-cell .btn { padding: 3px 8px; font-size: 11px; }
+            .summary-grid { grid-template-columns: repeat(2,1fr); }
         }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -433,6 +455,7 @@
             .app-header .header-actions .user-badge span { display: none; }
             .modal-box .form-actions { flex-direction: column; }
             .modal-box .form-actions .btn { width: 100%; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--gray-100); }
@@ -443,6 +466,8 @@
         .fw-600 { font-weight: 600; }
         .flex { display: flex; }
         .flex-center { display: flex; align-items: center; gap: 6px; }
+        .mt-8 { margin-top: 8px; }
+        .mb-8 { margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -452,7 +477,7 @@
         <div class="login-header">
             <div class="logo-icon"><i class="fas fa-coins"></i></div>
             <h1>出纳管理系统</h1>
-            <p>供应商 · 账户 · 付款管理</p>
+            <p>供应商 · 账户 · 收银对账</p>
         </div>
         <div id="loginError" class="login-error"><i class="fas fa-exclamation-circle"></i> 用户名或密码错误</div>
         <form id="loginForm" autocomplete="off">
@@ -497,10 +522,11 @@
             <button class="tab-btn" data-tab="accounts"><i class="fas fa-wallet"></i> <span>账户</span></button>
             <button class="tab-btn" data-tab="transactions"><i class="fas fa-exchange-alt"></i> <span>交易</span></button>
             <button class="tab-btn" data-tab="query"><i class="fas fa-search-dollar"></i> <span>查询</span></button>
+            <button class="tab-btn" data-tab="cashier"><i class="fas fa-cash-register"></i> <span>收银对账</span></button>
         </nav>
 
         <div class="tab-content">
-            <!-- 概览 -->
+            <!-- ===== 概览 ===== -->
             <div class="tab-pane active" id="tab-dashboard">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
                     <div style="background:var(--primary-bg);border-radius:var(--radius-sm);padding:16px;border:1px solid #C7D2FE;">
@@ -517,7 +543,8 @@
                     <div id="dashRecentTransactions" style="font-size:14px;color:var(--gray-500);">暂无交易记录</div>
                 </div>
             </div>
-            <!-- 供应商 -->
+
+            <!-- ===== 供应商 ===== -->
             <div class="tab-pane" id="tab-suppliers">
                 <div class="toolbar">
                     <div class="left"><button class="btn btn-primary btn-sm" onclick="openModal('supplierModal', null)"><i class="fas fa-plus"></i> 新增</button></div>
@@ -529,7 +556,8 @@
                     <table><thead><tr><th>名称</th><th>供应产品</th><th>联系人</th><th>电话</th><th style="width:140px;">操作</th></tr></thead><tbody id="supplierTableBody"></tbody></table>
                 </div>
             </div>
-            <!-- 账户 -->
+
+            <!-- ===== 账户 ===== -->
             <div class="tab-pane" id="tab-accounts">
                 <div class="toolbar">
                     <div class="left"><button class="btn btn-primary btn-sm" onclick="openModal('accountModal', null)"><i class="fas fa-plus"></i> 新增</button></div>
@@ -541,7 +569,8 @@
                     <table><thead><tr><th>名称</th><th>类型</th><th>账号</th><th>开户行</th><th style="width:140px;">操作</th></tr></thead><tbody id="accountTableBody"></tbody></table>
                 </div>
             </div>
-            <!-- 交易 -->
+
+            <!-- ===== 交易 ===== -->
             <div class="tab-pane" id="tab-transactions">
                 <div class="toolbar">
                     <div class="left"><button class="btn btn-primary btn-sm" onclick="openModal('transactionModal', null)"><i class="fas fa-plus"></i> 新增</button></div>
@@ -554,7 +583,8 @@
                     <table><thead><tr><th>供应商</th><th>账户</th><th>类型</th><th>入库金额</th><th>实付金额</th><th>状态</th><th>日期</th><th style="width:160px;">操作</th></tr></thead><tbody id="transactionTableBody"></tbody></table>
                 </div>
             </div>
-            <!-- 查询 -->
+
+            <!-- ===== 查询 ===== -->
             <div class="tab-pane" id="tab-query">
                 <div class="query-filters">
                     <div class="form-group"><label>供应商</label><select id="querySupplier"><option value="">全部</option></select></div>
@@ -564,8 +594,37 @@
                 </div>
                 <div id="queryResult" class="query-result"><div class="empty-state"><i class="fas fa-search-dollar"></i><p>请选择条件后点击查询</p></div></div>
             </div>
-        </div>
-    </div>
+
+            <!-- ===== 收银对账 ===== -->
+            <div class="tab-pane" id="tab-cashier">
+                <div class="toolbar">
+                    <div class="left">
+                        <button class="btn btn-primary btn-sm" onclick="openCashierModal()"><i class="fas fa-plus"></i> 录入</button>
+                    </div>
+                    <div class="right">
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                            <label style="font-size:13px;color:var(--gray-500);">从</label>
+                            <input type="date" id="cashierStartDate" style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;" />
+                            <label style="font-size:13px;color:var(--gray-500);">至</label>
+                            <input type="date" id="cashierEndDate" style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;" />
+                            <button class="btn btn-primary btn-sm" onclick="loadCashierRecords()"><i class="fas fa-search"></i> 查询</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetCashierQuery()"><i class="fas fa-undo"></i> 重置</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cashierSummary" class="summary-grid"></div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>日期</th><th>支付方式</th><th>金额 (¥)</th><th>备注</th><th style="width:80px;">操作</th></tr></thead>
+                        <tbody id="cashierTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- /tab-content -->
+    </div><!-- /app-container -->
 
     <!-- ===== 模态框：供应商 ===== -->
     <div class="modal-overlay" id="supplierModal">
@@ -626,7 +685,7 @@
         </div>
     </div>
 
-    <!-- ===== 确认打款模态框 ===== -->
+    <!-- ===== 模态框：确认打款 ===== -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box" style="max-width:400px;">
             <div class="modal-header"><h3>确认打款</h3><button class="close-btn" onclick="closeModal('confirmModal')">&times;</button></div>
@@ -638,11 +697,39 @@
         </div>
     </div>
 
+    <!-- ===== 模态框：收银录入 ===== -->
+    <div class="modal-overlay" id="cashierModal">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="cashierModalTitle">录入收银记录</h3><button class="close-btn" onclick="closeModal('cashierModal')">&times;</button></div>
+            <form id="cashierForm">
+                <input type="hidden" id="cashierFormId" />
+                <div class="form-row">
+                    <div class="form-group"><label>日期 *</label><input type="date" id="cashierFormDate" required /></div>
+                    <div class="form-group"><label>支付方式 *</label>
+                        <select id="cashierFormMethod" required>
+                            <option value="cash">现金</option>
+                            <option value="alipay">支付宝</option>
+                            <option value="wechat">微信</option>
+                            <option value="stored_value">储值卡</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group"><label>金额 (¥) *</label><input type="number" step="0.01" id="cashierFormAmount" placeholder="0.00" required /></div>
+                <div class="form-group"><label>备注</label><input type="text" id="cashierFormNote" placeholder="可选" /></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('cashierModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // ================================================================
         // 配置 - 部署时必须修改为您的 Worker 域名
         // ================================================================
-        const API_BASE = 'https://chuna.19860519.de5.net';  // ⚠️ 替换为您的真实 Worker 地址
+        const API_BASE = 'https://cashier-manager.your-username.workers.dev';  // ⚠️ 替换为您的真实 Worker 地址
 
         // ================================================================
         // 全局状态
@@ -652,6 +739,7 @@
         let suppliers = [];
         let accounts = [];
         let transactions = [];
+        let cashierRecords = [];
         let confirmTargetId = null;
 
         // ================================================================
@@ -668,7 +756,7 @@
         const currentUserSpan = $('currentUser');
 
         // ================================================================
-        // API 工具（修正：从 localStorage 读取 Token）
+        // API 工具
         // ================================================================
         async function apiFetch(endpoint, options = {}) {
             const url = API_BASE + endpoint;
@@ -676,7 +764,6 @@
                 'Content-Type': 'application/json',
                 ...options.headers,
             };
-            // 从 localStorage 获取最新的 token
             const token = localStorage.getItem('authToken');
             if (token) {
                 headers['Authorization'] = 'Bearer ' + token;
@@ -694,7 +781,7 @@
         }
 
         // ================================================================
-        // 认证（修正：登录成功后保存 token）
+        // 认证
         // ================================================================
         async function login(username, password) {
             try {
@@ -702,7 +789,6 @@
                     method: 'POST',
                     body: JSON.stringify({ username, password }),
                 });
-                // 响应中应包含 token
                 authToken = data.token;
                 currentUser = username;
                 localStorage.setItem('authToken', authToken);
@@ -778,6 +864,8 @@
                 console.error('加载数据失败', e);
                 if (e.message.includes('登录已过期')) logout();
             }
+            // 加载收银记录（单独加载，不影响主数据）
+            loadCashierRecords();
         }
 
         function renderAll() {
@@ -836,7 +924,7 @@
         }
 
         // ================================================================
-        // 供应商 CRUD（略，同之前，但注意 apiFetch 已修正）
+        // 供应商 CRUD
         // ================================================================
         function renderSuppliers() {
             const search = ($('supplierSearch').value || '').toLowerCase();
@@ -907,7 +995,7 @@
         });
 
         // ================================================================
-        // 账户 CRUD（略）
+        // 账户 CRUD
         // ================================================================
         function renderAccounts() {
             const search = ($('accountSearch').value || '').toLowerCase();
@@ -981,7 +1069,7 @@
         });
 
         // ================================================================
-        // 交易 CRUD（略）
+        // 交易 CRUD
         // ================================================================
         function renderTransactions() {
             const supFilter = parseInt($('transFilterSupplier').value) || null;
@@ -1202,6 +1290,113 @@
         }
 
         // ================================================================
+        // 收银记录管理
+        // ================================================================
+        async function loadCashierRecords() {
+            const startDate = $('cashierStartDate').value;
+            const endDate = $('cashierEndDate').value;
+            let url = '/cashier-records';
+            const params = new URLSearchParams();
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
+            if (params.toString()) url += '?' + params.toString();
+
+            try {
+                const resp = await apiFetch(url);
+                cashierRecords = resp.data || [];
+                renderCashierRecords();
+            } catch (e) {
+                console.error('加载收银记录失败', e);
+                cashierRecords = [];
+                renderCashierRecords();
+            }
+        }
+
+        function renderCashierRecords() {
+            const tbody = $('cashierTableBody');
+            if (cashierRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state" style="padding:24px;"><i class="fas fa-cash-register"></i><p>暂无收银记录</p></div></td></tr>`;
+                $('cashierSummary').innerHTML = '';
+                return;
+            }
+
+            const methodMap = { cash: '现金', alipay: '支付宝', wechat: '微信', stored_value: '储值卡', other: '其他' };
+            tbody.innerHTML = cashierRecords.map(r => `
+                <tr>
+                    <td>${r.record_date}</td>
+                    <td>${methodMap[r.payment_method] || r.payment_method}</td>
+                    <td>¥${(parseFloat(r.amount)||0).toFixed(2)}</td>
+                    <td>${escHtml(r.note || '')}</td>
+                    <td>
+                        <button class="btn btn-danger btn-xs" onclick="deleteCashierRecord(${r.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // 汇总统计
+            const summary = {};
+            cashierRecords.forEach(r => {
+                const method = methodMap[r.payment_method] || r.payment_method;
+                summary[method] = (summary[method] || 0) + parseFloat(r.amount || 0);
+            });
+            const total = Object.values(summary).reduce((a,b) => a+b, 0);
+            let html = `
+                <div class="summary-item summary-total">
+                    <div class="label">总计</div>
+                    <div class="value">¥${total.toFixed(2)}</div>
+                </div>
+            `;
+            for (const [k, v] of Object.entries(summary)) {
+                html += `
+                    <div class="summary-item">
+                        <div class="label">${k}</div>
+                        <div class="value">¥${v.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+            $('cashierSummary').innerHTML = html;
+        }
+
+        async function deleteCashierRecord(id) {
+            if (!confirm('确定删除该收银记录吗？')) return;
+            await apiFetch(`/cashier-records/${id}`, { method: 'DELETE' });
+            await loadCashierRecords();
+        }
+
+        function openCashierModal() {
+            $('cashierFormId').value = '';
+            $('cashierModalTitle').textContent = '录入收银记录';
+            $('cashierFormDate').value = new Date().toISOString().slice(0, 10);
+            $('cashierFormMethod').value = 'cash';
+            $('cashierFormAmount').value = '';
+            $('cashierFormNote').value = '';
+            openModal('cashierModal');
+        }
+
+        $('cashierForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                record_date: $('cashierFormDate').value,
+                payment_method: $('cashierFormMethod').value,
+                amount: parseFloat($('cashierFormAmount').value) || 0,
+                note: $('cashierFormNote').value.trim(),
+            };
+            if (!data.record_date) return alert('请选择日期');
+            if (!data.payment_method) return alert('请选择支付方式');
+            if (data.amount <= 0) return alert('请输入有效金额');
+            await apiFetch('/cashier-records', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('cashierModal');
+            $('cashierForm').reset();
+            await loadCashierRecords();
+        });
+
+        function resetCashierQuery() {
+            $('cashierStartDate').value = '';
+            $('cashierEndDate').value = '';
+            loadCashierRecords();
+        }
+
+        // ================================================================
         // 模态框工具
         // ================================================================
         function openModal(id) {
@@ -1245,6 +1440,10 @@
                 document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
                 const pane = $('tab-' + tab);
                 if (pane) pane.classList.add('active');
+                // 切换到收银对账时自动加载数据
+                if (tab === 'cashier') {
+                    loadCashierRecords();
+                }
             });
         });
 
